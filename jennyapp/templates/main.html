@@ -1,132 +1,80 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Main</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
-  <style>
-    body {
-      background-color: #181a1b;
-      color: #e0e0e0;
-    }
-    .hero.is-info, .hero.is-primary, section, .container, .section {
-      background-color: #23272e !important;
-      color: #e0e0e0;
-      border-radius: 8px;
-    }
-    .table {
-      background-color: #23272e;
-      color: #e0e0e0;
-    }
-    .input, .button, .field, .label, .control {
-      background-color: #23272e;
-      color: #e0e0e0;
-      border-color: #444;
-    }
-    .input:focus, .button:focus {
-      border-color: #888;
-      box-shadow: 0 0 0 2px #444;
-    }
-    .button.is-link, .button.is-info {
-      background-color: #3a3f4b;
-      color: #e0e0e0;
-      border: none;
-    }
-    .button.is-danger {
-      background-color: #a33a3a;
-      color: #fff;
-    }
-    .button.is-light {
-      background-color: #444;
-      color: #e0e0e0;
-    }
-    th, td {
-      background-color: #23272e !important;
-      color: #e0e0e0 !important;
-    }
-    a {
-      color: #8ab4f8;
-    }
-  </style>
-  <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+  <link href="/static/css/tailwind.css" rel="stylesheet">
 </head>
-<body>
-    <section>
-        <div>
-            <div class="container">
-                <h1 class="title">Jenny App</h1>
-                <h2 class="subtitle">Main Panel</h2>
-            </div>
-        </div>
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+  <!-- Navigation Bar -->
+  <nav class="bg-gray-800 shadow mb-8">
+    <div class="max-w-3xl mx-auto px-4 py-4 flex justify-between items-center">
+      <span class="text-2xl font-bold text-blue-400">Jenny App</span>
+    </div>
+  </nav>
+  <main class="flex flex-col items-center">
+    <section class="bg-gray-800 rounded-lg shadow p-6 mb-8 w-full max-w-3xl">
+      <h1 class="text-3xl font-semibold mb-2 text-blue-300 text-center">Main Panel</h1>
     </section>
-
-    <section class="section">
-      <div class="container">
-        <h2 class="title is-4">Registered Users</h2>
-        <table class="table is-striped is-fullwidth">
-          <thead>
+    <section class="bg-gray-800 rounded-lg shadow p-6 mb-8 w-full max-w-3xl">
+      <h2 class="text-xl font-semibold mb-4 text-blue-200 text-center">Registered Users</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-700">
+          <thead class="bg-gray-700">
             <tr>
-              <th>ID</th>
-              <th>Email</th>
-              <th>Specialty</th>
-              <th>Actions</th>
+              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-300">ID</th>
+              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-300">Email</th>
+              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-300">Specialty</th>
+              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-300">Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="bg-gray-800 divide-y divide-gray-700">
             {% for user in users %}
             <tr>
-              <td>{{ user.id }}</td>
-              <td>{{ user.email }}</td>
-              <td>{{ user.specialty or '' }}</td>
-              <td>
+              <td class="px-4 py-2 whitespace-nowrap">{{ user.id }}</td>
+              <td class="px-4 py-2 whitespace-nowrap">{{ user.email }}</td>
+              <td class="px-4 py-2 whitespace-nowrap">{{ user.specialty or '' }}</td>
+              <td class="px-4 py-2 whitespace-nowrap flex gap-1">
                 <form method="POST" action="{{ url_for('main.delete_user', user_id=user.id) }}" style="display:inline">
-                  <button type="submit" class="button is-small is-danger" title="Delete">
-                    <span class="icon is-small"><i class="fas fa-trash"></i></span>
+                  <button type="submit" class="flex items-center justify-center w-8 h-8 bg-red-600 hover:bg-red-700 text-white rounded transition" title="Delete">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                   </button>
                 </form>
-                <a href="{{ url_for('main.user_panel', user_id=user.id) }}" class="button is-small is-info" title="User Panel">
-                  <span class="icon is-small"><i class="fas fa-user-md"></i></span>
+                <a href="{{ url_for('main.user_panel', user_id=user.id) }}" class="flex items-center justify-center w-8 h-8 bg-blue-600 hover:bg-blue-700 text-white rounded transition" title="User Panel">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 </a>
               </td>
             </tr>
             {% else %}
             <tr>
-              <td colspan="4">No users registered yet.</td>
+              <td colspan="4" class="px-4 py-2 text-center text-gray-400">No users registered yet.</td>
             </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
     </section>
-
-    </section class="section">
-      <div class="container">
-        <form method="POST" action="{{ url_for('main.index') }}">
-          <div class="field">
-            <label class="label">Email</label>
-            <div class="control">
-              <input class="input" type="email" name="email" placeholder="Email" value="">
-            </div>
-            <p class="help is-danger">{{ errors.get('email', '') }}</p>
-          </div>
-          <div class="field">
-            <label class="label">Specialty</label>
-            <div class="control">
-              <input class="input" type="text" name="specialty" placeholder="Specialty" value="">
-            </div>
-            <p class="help is-danger">{{ errors.get('specialty', '') }}</p>
-          </div>
-
-          <div class="field is-grouped">
-            <div class="control">
-              <button type="submit" class="button is-link">Submit</button>
-            </div>
-          </div>
-        </form>
-      </div>
+    <section class="bg-gray-800 rounded-lg shadow p-6 w-full max-w-3xl">
+      <form method="POST" action="{{ url_for('main.index') }}" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Email</label>
+          <input class="w-full px-3 py-2 rounded bg-gray-900 text-gray-100 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400" type="email" name="email" placeholder="Email" value="">
+          <p class="text-red-400 text-xs mt-1">{{ errors.get('email', '') }}</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Specialty</label>
+          <input class="w-full px-3 py-2 rounded bg-gray-900 text-gray-100 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400" type="text" name="specialty" placeholder="Specialty" value="">
+          <p class="text-red-400 text-xs mt-1">{{ errors.get('specialty', '') }}</p>
+        </div>
+        <div class="flex justify-center">
+          <button type="submit" class="flex items-center gap-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold transition text-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            Submit
+          </button>
+        </div>
+      </form>
     </section>
-   
+  </main>
 </body>
 </html>

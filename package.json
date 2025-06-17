@@ -1,0 +1,11 @@
+{
+  "name": "jennyapp-tailwind",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:css": "npx tailwindcss -i ./jennyapp/static/src/input.css -o ./jennyapp/static/css/tailwind.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}
