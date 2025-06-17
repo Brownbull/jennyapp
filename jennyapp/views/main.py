@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from datetime import datetime
-from jennyapp.models import User, Patient
+from jennyapp.models import User, Session, Patient
 from jennyapp.extensions import db
 
 main = Blueprint('main', __name__)
@@ -72,6 +72,13 @@ def user_panel(user_id):
             col = col.asc()
         query = query.order_by(col)
     patients = query.all()
+    # Get last 5 sessions for this doctor
+    last_sessions = (
+        Session.query.filter_by(user_id=user.id)
+        .order_by(Session.date.desc())
+        .limit(5)
+        .all()
+    )
     if request.method == 'POST':
         email = request.form.get('email')
         specialty = request.form.get('specialty')
@@ -79,7 +86,7 @@ def user_panel(user_id):
         user.specialty = specialty
         db.session.commit()
         return redirect(url_for('main.user_panel', user_id=user.id))
-    return render_template('user_panel.html', user=user, patients=patients, search=search, sort=sort, order=order)
+    return render_template('user_panel.html', user=user, patients=patients, search=search, sort=sort, order=order, last_sessions=last_sessions)
 
 @main.route('/user_panel/<int:user_id>/new_patient', methods=['GET', 'POST'])
 def new_patient(user_id):
@@ -107,7 +114,6 @@ def new_patient(user_id):
 
 @main.route('/user_panel/<int:user_id>/delete_patient/<int:patient_id>', methods=['POST'])
 def delete_patient(user_id, patient_id):
-    from jennyapp.models import Patient
     patient = Patient.query.get_or_404(patient_id)
     db.session.delete(patient)
     db.session.commit()
@@ -115,14 +121,12 @@ def delete_patient(user_id, patient_id):
 
 @main.route('/user_panel/<int:user_id>/edit_patient/<int:patient_id>', methods=['GET', 'POST'])
 def edit_patient(user_id, patient_id):
-    from jennyapp.models import Patient
     patient = Patient.query.get_or_404(patient_id)
     if request.method == 'POST':
         patient.first_name = request.form.get('first_name')
         patient.last_name = request.form.get('last_name')
         dob = request.form.get('dob')
         if dob:
-            from datetime import datetime
             patient.dob = datetime.strptime(dob, '%Y-%m-%d')
         patient.email = request.form.get('email')
         patient.phone = request.form.get('phone')
@@ -133,8 +137,6 @@ def edit_patient(user_id, patient_id):
 
 @main.route('/user_panel/<int:user_id>/new_session/<int:patient_id>', methods=['GET', 'POST'])
 def new_session(user_id, patient_id):
-    from jennyapp.models import Session
-    from datetime import datetime
     if request.method == 'POST':
         date_str = request.form.get('date')
         notes = request.form.get('notes')
@@ -148,7 +150,6 @@ def new_session(user_id, patient_id):
 
 @main.route('/user_panel/<int:user_id>/patient_sessions/<int:patient_id>')
 def patient_sessions(user_id, patient_id):
-    from jennyapp.models import Patient, Session, User
     patient = Patient.query.get_or_404(patient_id)
     sort = request.args.get('sort', 'date')
     order = request.args.get('order', 'asc')
@@ -163,7 +164,6 @@ def patient_sessions(user_id, patient_id):
 
 @main.route('/user_panel/<int:user_id>/delete_session/<int:session_id>/<int:patient_id>', methods=['POST'])
 def delete_session(user_id, session_id, patient_id):
-    from jennyapp.models import Session
     session = Session.query.get_or_404(session_id)
     db.session.delete(session)
     db.session.commit()
@@ -171,8 +171,6 @@ def delete_session(user_id, session_id, patient_id):
 
 @main.route('/user_panel/<int:user_id>/edit_session/<int:session_id>/<int:patient_id>', methods=['GET', 'POST'])
 def edit_session(user_id, session_id, patient_id):
-    from jennyapp.models import Session
-    from datetime import datetime
     session = Session.query.get_or_404(session_id)
     if request.method == 'POST':
         date_str = request.form.get('date')
