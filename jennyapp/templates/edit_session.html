@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edit Session</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
+  <style>
+    body { background-color: #181a1b; color: #e0e0e0; }
+    .container, .section { background-color: #23272e; color: #e0e0e0; border-radius: 8px; }
+    .input, .button, .field, .label, .control, textarea { background-color: #23272e; color: #e0e0e0; border-color: #444; }
+    .button.is-link { background-color: #3a3f4b; color: #e0e0e0; border: none; }
+    .button.is-light { background-color: #444; color: #e0e0e0; }
+  </style>
+</head>
+<body>
+  <section class="section">
+    <div class="container">
+      <h1 class="title">Edit Session</h1>
+      <form method="POST" action="">
+        <div class="field">
+          <label class="label">Date and Time</label>
+          <div class="control">
+            <input class="input" type="datetime-local" name="date" value="{{ session.date.strftime('%Y-%m-%dT%H:%M') if session.date else '' }}" required>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Notes</label>
+          <div class="control">
+            <textarea class="textarea" name="notes" rows="4">{{ session.notes }}</textarea>
+          </div>
+        </div>
+        <div class="field is-grouped">
+          <div class="control">
+            <button type="submit" class="button is-link">Save Changes</button>
+          </div>
+          <div class="control">
+            <a href="{{ url_for('main.patient_sessions', user_id=user_id, patient_id=patient_id) }}" class="button is-light">Cancel</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+</body>
+</html>

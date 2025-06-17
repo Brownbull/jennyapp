@@ -6,10 +6,54 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Main</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
+  <style>
+    body {
+      background-color: #181a1b;
+      color: #e0e0e0;
+    }
+    .hero.is-info, .hero.is-primary, section, .container, .section {
+      background-color: #23272e !important;
+      color: #e0e0e0;
+      border-radius: 8px;
+    }
+    .table {
+      background-color: #23272e;
+      color: #e0e0e0;
+    }
+    .input, .button, .field, .label, .control {
+      background-color: #23272e;
+      color: #e0e0e0;
+      border-color: #444;
+    }
+    .input:focus, .button:focus {
+      border-color: #888;
+      box-shadow: 0 0 0 2px #444;
+    }
+    .button.is-link, .button.is-info {
+      background-color: #3a3f4b;
+      color: #e0e0e0;
+      border: none;
+    }
+    .button.is-danger {
+      background-color: #a33a3a;
+      color: #fff;
+    }
+    .button.is-light {
+      background-color: #444;
+      color: #e0e0e0;
+    }
+    th, td {
+      background-color: #23272e !important;
+      color: #e0e0e0 !important;
+    }
+    a {
+      color: #8ab4f8;
+    }
+  </style>
   <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 </head>
 <body>
-    <section class="hero is-primary">
+    <section>
         <div>
             <div class="container">
                 <h1 class="title">Jenny App</h1>
@@ -17,25 +61,72 @@
             </div>
         </div>
     </section>
+
     <section class="section">
-
-    <div class="container">
-      <form method="POST" action="{{ url_for('main.index') }}">
-        <div class="field">
-          <label class="label">Email</label>
-          <div class="control">
-            <input class="input" type="email" name="email" placeholder="Email" value="">
-          </div>
-          <p class="help is-danger">{{ errors.get('email', '') }}</p>
-        </div>
-
-        <div class="field is-grouped">
-          <div class="control">
-            <button type="submit" class="button is-link">Submit</button>
-          </div>
-        </div>
-      </form>
-    </div>
+      <div class="container">
+        <h2 class="title is-4">Registered Users</h2>
+        <table class="table is-striped is-fullwidth">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Email</th>
+              <th>Specialty</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+            <tr>
+              <td>{{ user.id }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.specialty or '' }}</td>
+              <td>
+                <form method="POST" action="{{ url_for('main.delete_user', user_id=user.id) }}" style="display:inline">
+                  <button type="submit" class="button is-small is-danger" title="Delete">
+                    <span class="icon is-small"><i class="fas fa-trash"></i></span>
+                  </button>
+                </form>
+                <a href="{{ url_for('main.user_panel', user_id=user.id) }}" class="button is-small is-info" title="User Panel">
+                  <span class="icon is-small"><i class="fas fa-user-md"></i></span>
+                </a>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="4">No users registered yet.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </section>
-    
+
+    </section class="section">
+      <div class="container">
+        <form method="POST" action="{{ url_for('main.index') }}">
+          <div class="field">
+            <label class="label">Email</label>
+            <div class="control">
+              <input class="input" type="email" name="email" placeholder="Email" value="">
+            </div>
+            <p class="help is-danger">{{ errors.get('email', '') }}</p>
+          </div>
+          <div class="field">
+            <label class="label">Specialty</label>
+            <div class="control">
+              <input class="input" type="text" name="specialty" placeholder="Specialty" value="">
+            </div>
+            <p class="help is-danger">{{ errors.get('specialty', '') }}</p>
+          </div>
+
+          <div class="field is-grouped">
+            <div class="control">
+              <button type="submit" class="button is-link">Submit</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+   
 </body>
+</html>
