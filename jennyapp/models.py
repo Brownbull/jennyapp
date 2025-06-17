@@ -1,4 +1,5 @@
 from .extensions import db
+from datetime import date
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -18,9 +19,16 @@ class Patient(db.Model):
     rut = db.Column(db.String(30), unique=True, nullable=True)  # National ID
     sessions = db.relationship('Session', backref='patient', lazy=True)
 
+    def age(self):
+        if not self.dob:
+            return ''
+        today = date.today()
+        return today.year - self.dob.year - ((today.month, today.day) < (self.dob.month, self.dob.day))
+
 class Session(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
     date = db.Column(db.DateTime, nullable=False)
     notes = db.Column(db.Text, nullable=True)
+    cost = db.Column(db.Float, nullable=True)

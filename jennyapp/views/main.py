@@ -55,7 +55,7 @@ def user_panel(user_id):
     search = request.args.get('search', '')
     sort = request.args.get('sort', 'last_name')
     order = request.args.get('order', 'asc')
-    query = Patient.query.filter_by(created_by=user.id)
+    query = Patient.query  # Show all patients, not just those created by this user
     if search:
         like = f"%{search}%"
         query = query.filter(
@@ -138,8 +138,9 @@ def new_session(user_id, patient_id):
     if request.method == 'POST':
         date_str = request.form.get('date')
         notes = request.form.get('notes')
+        cost = request.form.get('cost')
         date = datetime.strptime(date_str, '%Y-%m-%dT%H:%M') if date_str else None
-        session = Session(user_id=user_id, patient_id=patient_id, date=date, notes=notes)
+        session = Session(user_id=user_id, patient_id=patient_id, date=date, notes=notes, cost=cost)
         db.session.add(session)
         db.session.commit()
         return redirect(url_for('main.user_panel', user_id=user_id))
@@ -147,9 +148,17 @@ def new_session(user_id, patient_id):
 
 @main.route('/user_panel/<int:user_id>/patient_sessions/<int:patient_id>')
 def patient_sessions(user_id, patient_id):
-    from jennyapp.models import Patient, Session
+    from jennyapp.models import Patient, Session, User
     patient = Patient.query.get_or_404(patient_id)
-    sessions = [s for s in patient.sessions if s.user_id == user_id]
+    sort = request.args.get('sort', 'date')
+    order = request.args.get('order', 'asc')
+    sessions = list(patient.sessions)
+    if sort == 'date':
+        sessions.sort(key=lambda s: s.date, reverse=(order=='desc'))
+    elif sort == 'specialty':
+        sessions.sort(key=lambda s: (s.user.specialty or '').lower(), reverse=(order=='desc'))
+    elif sort == 'email':
+        sessions.sort(key=lambda s: (s.user.email or '').lower(), reverse=(order=='desc'))
     return render_template('patient_sessions.html', patient=patient, sessions=sessions, user_id=user_id)
 
 @main.route('/user_panel/<int:user_id>/delete_session/<int:session_id>/<int:patient_id>', methods=['POST'])
@@ -168,9 +177,11 @@ def edit_session(user_id, session_id, patient_id):
     if request.method == 'POST':
         date_str = request.form.get('date')
         notes = request.form.get('notes')
+        cost = request.form.get('cost')
         if date_str:
             session.date = datetime.strptime(date_str, '%Y-%m-%dT%H:%M')
         session.notes = notes
+        session.cost = cost
         db.session.commit()
         return redirect(url_for('main.patient_sessions', user_id=user_id, patient_id=patient_id))
     return render_template('edit_session.html', session=session, user_id=user_id, patient_id=patient_id)
