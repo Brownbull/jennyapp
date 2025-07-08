@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block nav %}{% endblock %}
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row pad">
+        <div class="col-lg-4 col-lg-offset-4 pad">
+            <h2 class="text-center bold">Join Jenny App.</h2>
+            <br />
+            <form action="{{ url_for('main.login') }}" method="POST" enctype="multipart/form-data">
+                <!-- CSRF Token -->
+                {{ form.csrf_token }}
+                <div class="form-group">
+                    {{ form.email(class="form-control", placeholder="Enter your email") }}
+                    <ul>
+                        {% for error in form.email.errors %}
+                        <li class="text-danger">{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="form-group">
+                    {{ form.password(class="form-control", placeholder="Enter your password") }}
+                    <ul>
+                        {% for error in form.password.errors %}
+                        <li class="text-danger">{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox-inline">
+                        <label>
+                            {{ form.remember }}
+                            Remember Me
+                        </label>
+                    </div>  </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-danger btn-block">Login</button>
+                </div>
+            </form>
+
+            <div class="form-group">
+                <a href="{{ url_for('main.index') }}"><i class="glyphicon glyphicon-arrow-left"></i> Back</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
