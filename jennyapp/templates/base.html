@@ -30,16 +30,19 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ul class="nav navbar-nav navbar-right">
+                    {% if current_user.is_authenticated %}
                     <li class=""><a
                             href="{{ url_for('main.timeline') }}">Timeline</a></li>
                     <li class=""><a
                             href="{{ url_for('main.profile') }}">My Profile</a></li>
                     <li class=""><a
                             href="{{ url_for('main.logout') }}">Logout</a></li>
+                    {% else %}
                     <li class=""><a
                             href="{{ url_for('main.register')}}">Sign Up</a></li>
                     <li class=""><a
                             href="{{ url_for('main.login')}}">Login</a></li>
+                    {% endif %}
                 </ul>
             </div><!-- /.navbar-collapse -->
         </div>

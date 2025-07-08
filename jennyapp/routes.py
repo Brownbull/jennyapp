@@ -60,10 +60,13 @@ def login():
             return render_template('login.html', error=error)
         else:
             login_user(user, remember = form.remember.data)
-            return "<h1>Logged in successfully!</h1>"
-            # return redirect(url_for('main.profile'))
+            return redirect(url_for('main.profile'))
   
     return render_template('login.html', form=form)
+
+@main.route('/profile')
+def profile():
+    return render_template('profile.html')
 
 
 
@@ -71,10 +74,6 @@ def login():
 @main.route('/timeline')
 def timeline():
     return "<h1>timeline</h1>"
-
-@main.route('/profile')
-def profile():
-    return "<h1>profile</h1>"
 
 @main.route('/logout')
 @login_required
