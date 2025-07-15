@@ -1,0 +1,120 @@
+{% extends 'dashboard/dash_nav.html' %}
+{% block dashboard_content %}
+<div class="py-6">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="sm:flex sm:items-center">
+            <div class="sm:flex-auto">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Sessions</h2>
+            </div>
+            <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+                <a href="{{ url_for('main.edit_session') }}"
+                    class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                    Add Session</a>
+            </div>
+        </div>
+    </div>
+    <div class="mt-6 overflow-x-auto">
+    <form method="get" class="mb-4 flex gap-4 items-center">
+        <div>
+            <label for="doctor" class="text-xs font-medium text-gray-700">Medic:</label>
+            <select name="doctor" id="doctor" class="ml-2 px-2 py-1 rounded border border-gray-300">
+                <option value="">All</option>
+                {% for d in doctor_list %}
+                <option value="{{ d }}" {% if doctor == d %}selected{% endif %}>{{ d }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="patient" class="text-xs font-medium text-gray-700">Patient:</label>
+            <select name="patient" id="patient" class="ml-2 px-2 py-1 rounded border border-gray-300">
+                <option value="">All</option>
+                {% for p in patient_list %}
+                <option value="{{ p }}" {% if patient == p %}selected{% endif %}>{{ p }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="from_date" class="text-xs font-medium text-gray-700">From:</label>
+            <input type="date" name="from_date" id="from_date" class="ml-2 px-2 py-1 rounded border border-gray-300" value="{{ from_date }}">
+        </div>
+        <div>
+            <label for="to_date" class="text-xs font-medium text-gray-700">To:</label>
+            <input type="date" name="to_date" id="to_date" class="ml-2 px-2 py-1 rounded border border-gray-300" value="{{ to_date }}">
+        </div>
+        <input type="hidden" name="sort" value="{{ sort }}">
+        <button type="submit" class="px-3 py-2 rounded bg-indigo-600 text-white text-xs font-semibold">Filter</button>
+    </form>
+    <div class="-mx-4 -my-2 sm:-mx-6 lg:-mx-8">
+        <div class="inline-block min-w-full py-2 align-middle">
+            <table class="min-w-full border-separate border-spacing-0">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sticky top-0 z-10 border-b border-gray-300 bg-white/75 py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter sm:pl-6 lg:pl-8">
+                            Date
+                            <a href="{{ url_for('main.sessions', sort='asc' if sort == 'desc' else 'desc', doctor=doctor, patient=patient) }}" class="ml-2 text-xs text-indigo-600 hover:text-indigo-900">
+                                {% if sort == 'desc' %}
+                                    ▲
+                                {% else %}
+                                    ▼
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th scope="col" class="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter sm:table-cell">
+                            Hour
+                        </th>
+                        <th scope="col" class="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter sm:table-cell">
+                            Medic (User)
+                        </th>
+                        <th scope="col" class="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter sm:table-cell">
+                            Patient Name
+                        </th>
+                        <th scope="col" class="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter sm:table-cell">
+                            Total Amount
+                        </th>
+                        <th scope="col" class="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter sm:table-cell">
+                            Payment Status
+                        </th>
+                        <th scope="col" class="sticky top-0 z-10 border-b border-gray-300 bg-white/75 py-3.5 pr-4 pl-3 backdrop-blur-sm backdrop-filter sm:pr-6 lg:pr-8">
+                            <span class="sr-only">Edit</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for session in sessions %}
+                    <tr>
+                        <td class="border-b border-gray-200 py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6 lg:pl-8">
+                            {{ session.session_date.strftime('%Y-%m-%d') }}
+                        </td>
+                        <td class="border-b border-gray-200 px-3 py-4 text-sm whitespace-nowrap text-gray-500 sm:table-cell">
+                            {{ session.session_time.strftime('%H:%M') }}
+                        </td>
+                        <td class="border-b border-gray-200 px-3 py-4 text-sm whitespace-nowrap text-gray-500 sm:table-cell">
+                            {{ session.doctor_email }}
+                        </td>
+                        <td class="border-b border-gray-200 px-3 py-4 text-sm whitespace-nowrap text-gray-500 sm:table-cell">
+                            {{ session.patient_full_name }}
+                        </td>
+                        <td class="border-b border-gray-200 px-3 py-4 text-sm whitespace-nowrap text-gray-500 sm:table-cell">
+                            {{ session.total_amount or '' }}
+                        </td>
+                        <td class="border-b border-gray-200 px-3 py-4 text-sm whitespace-nowrap text-gray-500 sm:table-cell">
+                            <span class="inline-block px-2 py-1 rounded {{ 'bg-green-100 text-green-800' if session.payment_status == 'paid' else 'bg-red-100 text-red-800' }}">
+                                {{ session.payment_status|capitalize }}
+                            </span>
+                        </td>
+                        <td class="relative border-b border-gray-200 py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-8 lg:pr-8">
+                            <a href="{{ url_for('main.edit_session', session_id=session.id) }}" class="text-indigo-600 hover:text-indigo-900">Edit<span class="sr-only">{{ session.patient_full_name }}</span></a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="px-4 py-2 text-center text-gray-500">No sessions found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+</div>
+{% endblock dashboard_content %}

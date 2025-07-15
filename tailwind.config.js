@@ -1,10 +1,5 @@
 module.exports = {
-  content: [
-    './jennyapp/templates/**/*.html',
-    './jennyapp/static/src/input.css'
-  ],
-  theme: {
-    extend: {},
-  },
+  content: ["./templates/**/*.html"], // point to your Jinja files
+  theme: { extend: {} },
   plugins: [],
 }

@@ -1,0 +1,22 @@
+{% extends 'dashboard/dash_nav.html' %}
+{% block dashboard_content %}
+<div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow-sm">
+  <div class="px-4 py-5 sm:px-6">
+    Incoming Sessions
+  </div>
+  <div class="px-4 py-5 sm:p-6">
+    <!-- Content goes here -->
+     {% include 'dashboard/inc_sessions.html' %}
+  </div>
+</div>
+<div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow-sm">
+  <div class="px-4 py-5 sm:px-6">
+    Past Sessions
+  </div>
+  <div class="px-4 py-5 sm:p-6">
+    <!-- Content goes here -->
+    {% include 'dashboard/past_sessions.html' %}
+  </div>
+</div>
+
+{% endblock dashboard_content %}

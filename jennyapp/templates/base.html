@@ -1,69 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" class="h-full bg-white">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
     <title>Jenny App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.css') }}">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='bs/css/bootstrap.min.css') }}" >
-    <link rel="stylesheet" href="{{ url_for('static', filename='bs/css/united.min.css')}}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css')}}">
 </head>
+    <body class="h-full">
 
-<body>
-    {% block nav %}
-    <nav class="navbar navbar-default" role="navigation">
-        <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="./">Jenny App</a>
-            </div>
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse navbar-ex1-collapse">
-                <ul class="nav navbar-nav navbar-right">
-                    {% if current_user.is_authenticated %}
-                    <li class=""><a
-                            href="{{ url_for('main.timeline') }}">Timeline</a></li>
-                    <li class=""><a
-                            href="{{ url_for('main.profile') }}">My Profile</a></li>
-                    <li class=""><a
-                            href="{{ url_for('main.logout') }}">Logout</a></li>
-                    {% else %}
-                    <li class=""><a
-                            href="{{ url_for('main.register')}}">Sign Up</a></li>
-                    <li class=""><a
-                            href="{{ url_for('main.login')}}">Login</a></li>
-                    {% endif %}
-                </ul>
-            </div><!-- /.navbar-collapse -->
-        </div>
-    </nav>
-    {% endblock %}
-
-    <div class="container">
-        {% block content %}{% endblock %}
-        <footer>
-            <div class="row pad">
-                <div class="col-lg-12 text-center">
-                    Copyright &copy; 2025 <strong> <a href="./">Jenny App</a></strong>
-                </div>
-            </div>
-        </footer>
-    </div>
-
-    <!-- jQuery -->
-    <script src="{{ url_for('static', filename='bs/js/jquery.min.js')}}"></script>
-    <!-- Bootstrap JavaScript -->
-    <script src="{{ url_for('static', filename='bs/js/bootstrap.min.js')}}"></script>
-</body>
-
+    {% block content %}{% endblock %}
+    <script src="{{ url_for('static', filename='js/header-menu.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dashboard-menu.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/documents-menu.js') }}"></script>
+    </body>
 </html>

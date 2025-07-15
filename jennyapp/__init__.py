@@ -1,15 +1,17 @@
-from flask import Flask
+from flask import Flask, url_for
+# from flask_login import LoginManager
 
-from .extensions import db, migrate, login_manager
-from .models import User
-from .utils import time_since
-from .routes import main
 from .commands import create_tables
+from .extensions import db, migrate, login_manager
+from .routes import main
+from .utils import time_since
 
-def create_app(config_file='settings.py'):
+from .models import User
+
+def create_app():
   app = Flask(__name__)
 
-  app.config.from_pyfile(config_file)
+  app.config.from_prefixed_env()
 
   db.init_app(app)
   migrate.init_app(app, db)
@@ -29,5 +31,5 @@ def create_app(config_file='settings.py'):
   
   # COMMANDS
   app.cli.add_command(create_tables)
-  
+
   return app

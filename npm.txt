@@ -1,2 +1,0 @@
-npm install
-npx tailwindcss -i ./jennyapp/static/src/input.css -o ./jennyapp/static/css/tailwind.css --minify
