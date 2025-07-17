@@ -329,9 +329,10 @@ def edit_session(session_id=None):
         form = SessionForm(obj=session_obj)
         form.doctor_email.choices = doctor_choices
         form.patient_full_name.choices = patient_choices
-        form.doctor_email.data = session_obj.doctor_email
-        form.patient_full_name.data = session_obj.patient_full_name
         existing_docs = SessionDocument.query.filter_by(session_id=session_obj.id).all()
+        if request.method == 'GET':
+            form.doctor_email.data = session_obj.doctor_email
+            form.patient_full_name.data = session_obj.patient_full_name
 
     else:
         form = SessionForm()
@@ -344,6 +345,9 @@ def edit_session(session_id=None):
             if session_obj:
                 # Update existing session
                 session_obj.doctor_email = form.doctor_email.data
+                user = User.query.filter_by(email=form.doctor_email.data).first()
+                if user:
+                    session_obj.user_id = user.id
                 session_obj.patient_full_name = form.patient_full_name.data
                 session_obj.session_date = form.session_date.data
                 session_obj.session_time = form.session_time.data
