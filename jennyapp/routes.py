@@ -1,3 +1,4 @@
+
 from flask import Blueprint, render_template, url_for, redirect, request, current_app, abort
 from flask_login import login_user, current_user, login_required, logout_user
 from datetime import datetime
@@ -149,6 +150,18 @@ def profile_image(user_id):
         import io
         return send_file(io.BytesIO(profile.profile_picture), mimetype='image/jpeg')  # or detect mimetype
     abort(404)
+
+@main.route('/delete_user/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id, description=f'User with id {user_id} not found')
+    # Delete all sessions associated with this user (medic)
+    sessions = Session.query.filter_by(user_id=user.id).all()
+    for session in sessions:
+        db.session.delete(session)
+    db.session.delete(user)
+    db.session.commit()
+    return redirect(url_for('main.dashboard'))
 
 @main.route('/patients')
 @login_required
