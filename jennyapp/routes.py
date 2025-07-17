@@ -96,6 +96,8 @@ def profile():
     import os
     form = ProfileForm()
     user_profile = UserProfile.query.filter_by(user_id=current_user.id).first()
+    # Calculate session count for current user
+    session_count = Session.query.filter_by(user_id=current_user.id).count()
     if request.method == 'POST' and form.validate_on_submit():
         if not user_profile:
             user_profile = UserProfile(user_id=current_user.id)
@@ -138,7 +140,7 @@ def profile():
             form.profile_picture.data = user_profile.profile_picture_filename
         else:
             form.email.data = current_user.email
-    return render_template('dashboard/profile.html', form=form)
+    return render_template('dashboard/profile.html', form=form, session_count=session_count)
 
 @main.route('/profile_image/<int:user_id>')
 @login_required
