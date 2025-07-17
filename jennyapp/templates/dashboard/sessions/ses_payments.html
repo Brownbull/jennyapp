@@ -45,6 +45,17 @@
                 <input type="date" name="to_date" id="to_date" class="ml-2 px-2 py-1 rounded border border-gray-300" value="{{ to_date }}">
             </div>
         </div>
+        <!-- Payment Status Filter -->
+        <div class="flex flex-row gap-4 mb-2">
+            <div>
+                <label for="payment_status" class="text-xs font-medium text-gray-700">Payment Status:</label>
+                <select name="payment_status" id="payment_status" class="ml-2 px-2 py-1 rounded border border-gray-300">
+                    <option value="">All</option>
+                    <option value="paid" {% if payment_status == 'paid' %}selected{% endif %}>Paid</option>
+                    <option value="unpaid" {% if payment_status == 'unpaid' %}selected{% endif %}>Unpaid</option>
+                </select>
+            </div>
+        </div>
         <input type="hidden" name="sort" value="{{ sort }}">
         <div class="flex ">
             <button type="submit"
