@@ -26,15 +26,6 @@
                 </select>
             </div>
             <div>
-                <label for="rut" class="text-xs font-medium text-gray-700">Rut:</label>
-                <select name="rut" id="rut" class="ml-2 px-2 py-1 rounded border border-gray-300">
-                    <option value="">All</option>
-                    {% for r in rut_list %}
-                    <option value="{{ r }}" {% if rut == r %}selected{% endif %}>{{ r }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div>
                 <label for="patient" class="text-xs font-medium text-gray-700">Patient:</label>
                 <select name="patient" id="patient" class="ml-2 px-2 py-1 rounded border border-gray-300">
                     <option value="">All</option>
@@ -82,10 +73,13 @@
                             Medic (User)
                         </th>
                         <th scope="col" class="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter sm:table-cell">
-                            Rut
+                            Patient Name
                         </th>
                         <th scope="col" class="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter sm:table-cell">
-                            Patient Name
+                            Total Amount
+                        </th>
+                        <th scope="col" class="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter sm:table-cell">
+                            Payment Status
                         </th>
                         <th scope="col" class="sticky top-0 z-10 border-b border-gray-300 bg-white/75 py-3.5 pr-4 pl-3 backdrop-blur-sm backdrop-filter sm:pr-6 lg:pr-8">
                             <span class="sr-only">Edit</span>
@@ -105,10 +99,15 @@
                             {{ session.doctor_email }}
                         </td>
                         <td class="border-b border-gray-200 px-3 py-4 text-sm whitespace-nowrap text-gray-500 sm:table-cell">
-                            {{ session.patient.rut_prefix }}
+                            {{ session.patient_full_name }}
                         </td>
                         <td class="border-b border-gray-200 px-3 py-4 text-sm whitespace-nowrap text-gray-500 sm:table-cell">
-                            {{ session.patient_full_name }}
+                            {{ session.total_amount or '' }}
+                        </td>
+                        <td class="border-b border-gray-200 px-3 py-4 text-sm whitespace-nowrap text-gray-500 sm:table-cell">
+                            <span class="inline-block px-2 py-1 rounded {{ 'bg-green-100 text-green-800' if session.payment_status == 'paid' else 'bg-red-100 text-red-800' }}">
+                                {{ session.payment_status|capitalize }}
+                            </span>
                         </td>
                         <td class="relative border-b border-gray-200 py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-8 lg:pr-8">
                             <a href="{{ url_for('main.edit_session', session_id=session.id) }}" class="text-indigo-600 hover:text-indigo-900">Edit<span class="sr-only">{{ session.patient_full_name }}</span></a>

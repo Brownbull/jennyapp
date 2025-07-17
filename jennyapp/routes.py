@@ -275,6 +275,7 @@ def sessions():
     sort = request.args.get('sort', 'desc')
     doctor = request.args.get('doctor', '')
     patient = request.args.get('patient', '')
+    rut = request.args.get('rut', '')
     from_date = request.args.get('from_date', '')
     to_date = request.args.get('to_date', '')
     query = Session.query
@@ -282,6 +283,9 @@ def sessions():
         query = query.filter(Session.doctor_email == doctor)
     if patient:
         query = query.filter(Session.patient_full_name == patient)
+    if rut:
+        # Join Patient to filter by rut_prefix
+        query = query.join(Patient).filter(Patient.rut_prefix == rut)
     if from_date:
         try:
             from_date_obj = datetime.strptime(from_date, '%Y-%m-%d').date()
@@ -303,16 +307,19 @@ def sessions():
     # For filter dropdowns
     doctor_list = [u.email for u in User.query.all()]
     patient_list = [p.full_name for p in Patient.query.all()]
-    
+    rut_list = [str(p.rut_prefix) for p in Patient.query.filter(Patient.rut_prefix != None).distinct()]
+
     context = {
         'sessions': sessions,
         'sort': sort,
         'doctor': doctor,
         'patient': patient,
+        'rut': rut,
         'from_date': from_date,
         'to_date': to_date,
         'doctor_list': doctor_list,
         'patient_list': patient_list,
+        'rut_list': rut_list,
     }
     return render_template('dashboard/sessions/ses_index.html', **context)
 
@@ -343,6 +350,9 @@ def edit_session(session_id=None):
         form.doctor_email.choices = doctor_choices
         form.patient_full_name.choices = patient_choices
         existing_docs = []
+        # Set default doctor to current user
+        if not form.doctor_email.data:
+            form.doctor_email.data = current_user.email
 
     if request.method == 'POST':
         if form.validate_on_submit():
@@ -394,10 +404,11 @@ def edit_session(session_id=None):
                     patient = Patient(full_name=form.patient_full_name.data)
                     db.session.add(patient)
                     db.session.commit()
+                # Always use current_user for new session
                 session_obj = Session(
-                    user_id=User.query.filter_by(email=form.doctor_email.data).first().id,
+                    user_id=current_user.id,
                     patient_id=patient.id,
-                    doctor_email=form.doctor_email.data,
+                    doctor_email=current_user.email,
                     patient_full_name=form.patient_full_name.data,
                     session_date=form.session_date.data,
                     session_time=form.session_time.data,
