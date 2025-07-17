@@ -95,7 +95,7 @@
                                             Sessions
                                         </a>
                                     </li>
-                                    <li class="{% if request.endpoint == 'main.sessions' %}bg-gray-50 text-indigo-600{% endif %}">
+                                    <li class="{% if request.endpoint == 'main.payments' %}bg-gray-50 text-indigo-600{% endif %}">
                                         <a href="{{ url_for('main.payments', doctor=current_user.email) }}  "
                                             class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
                                             <svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
@@ -179,7 +179,7 @@
                                     Sessions
                                 </a>
                             </li>
-                            <li class="{% if request.endpoint == 'main.sessions' %}bg-gray-50 text-indigo-600{% endif %}">
+                            <li class="{% if request.endpoint == 'main.payments' %}bg-gray-50 text-indigo-600{% endif %}">
                                 <a href="{{ url_for('main.payments', doctor=current_user.email) }}  "
                                     class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
                                     <svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600" fill="none" viewBox="0 0 24 24"

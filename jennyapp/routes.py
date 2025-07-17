@@ -9,7 +9,7 @@ UPLOAD_FOLDER = 'static/uploads'
 
 from .extensions import db
 from .forms import RegisterForm, LoginForm, PatientForm, SessionForm, ProfileForm
-from .models import User, Patient, Session , SessionDocument
+from .models import User, Patient, Session, SessionDocument
 
 main = Blueprint('main', __name__)
 @main.route('/')
@@ -268,6 +268,11 @@ def edit_patient(patient_id):
 @login_required
 def delete_patient(patient_id):
     patient = Patient.query.get_or_404(patient_id, description=f'Patient with id {patient_id} not found')
+    # Delete all sessions associated with this patient using ORM
+    from .models import Session
+    sessions = Session.query.filter_by(patient_id=patient.id).all()
+    for session in sessions:
+        db.session.delete(session)
     db.session.delete(patient)
     db.session.commit()
     return redirect(url_for('main.patients'))
@@ -414,6 +419,12 @@ def edit_session(session_id=None):
         # Set default doctor to current user
         if not form.doctor_email.data:
             form.doctor_email.data = current_user.email
+        # Preselect patient if patient_id is provided in query string
+        patient_id = request.args.get('patient_id')
+        if patient_id:
+            patient = Patient.query.get(int(patient_id))
+            if patient:
+                form.patient_full_name.data = patient.full_name
 
     if request.method == 'POST':
         if form.validate_on_submit():
@@ -515,11 +526,16 @@ def edit_session(session_id=None):
 @main.route('/delete_session/<int:session_id>', methods=['GET', 'POST'])
 @login_required
 def delete_session(session_id):
-    session = Session.query.get_or_404(session_id, description=f'session with id {session_id} not found')
+    session = Session.query.get(session_id)
+    if not session:
+        from flask import flash
+        flash(f'Session with id {session_id} not found or already deleted.', 'warning')
+        return redirect(url_for('main.sessions', doctor=current_user.email))
     db.session.delete(session)
     db.session.commit()
     next_url = request.args.get('next')
     if next_url:
         return redirect(next_url)
-    return redirect(url_for('main.sessions'))
+    # Redirect to sessions filtered by current user (doctor)
+    return redirect(url_for('main.sessions', doctor=current_user.email))
 
