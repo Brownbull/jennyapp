@@ -221,6 +221,8 @@ world_countries = ["Afganistán",
     "Zimbabue"
 ]
 
+payment_method_choices = [('cash', 'Cash'), ('transfer', 'Transfer'), ('credit_card', 'Credit Card'), ('debit_card', 'Debit Card')]
+
 class RegisterForm(FlaskForm):
     email = EmailField('Email', validators=[InputRequired('Email is required'), Length(max=120), Email(message='Invalid email address.')])
     password = PasswordField('Password', validators=[InputRequired('Password is required'), Length(min=6, max=120, message='Password must be between 6 and 120 characters')])
@@ -268,7 +270,7 @@ class SessionForm(FlaskForm):
     medications = TextAreaField('Medications', validators=[Length(max=200)], default='')
     diagnostic = TextAreaField('Diagnostic', validators=[Length(max=200)], default='')
     # TRANSACTION
-    payment_method = SelectField('Payment Method', choices=[('cash', 'Cash'), ('credit_card', 'Credit Card'), ('debit_card', 'Debit Card')], default='cash')
+    payment_method = SelectField('Payment Method', choices=payment_method_choices, default='transfer')
     total_amount = IntegerField('Total Amount', validators=[Optional()])
     payment_status = SelectField('Payment Status', choices=[('paid', 'Paid'), ('unpaid', 'Unpaid')], default='unpaid')
     # FILES
