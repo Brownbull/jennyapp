@@ -48,6 +48,7 @@ class Patient(db.Model):
     rut_prefix = db.Column(db.Integer)
     rut_suffix = db.Column(db.String(1))
     full_name = db.Column(db.String(200), nullable=False)
+    occupation = db.Column(db.String(100), nullable=True)
     date_of_birth = db.Column(db.DateTime, nullable=True)
     gender = db.Column(db.String(20), nullable=True)
     email = db.Column(db.String(120), nullable=True)

@@ -235,6 +235,7 @@ class LoginForm(FlaskForm):
 
 class PatientForm(FlaskForm):
     full_name = StringField('Full Name', validators=[DataRequired(), Length(max=200)])
+    occupation = StringField('Occupation', validators=[Length(max=100)], default='')
     rut_prefix = IntegerField('RUT Prefix', validators=[Optional()])
     rut_suffix = StringField('RUT Suffix', validators=[Optional(), Length(max=1)])
     # Ensure the date of birth is not in the future

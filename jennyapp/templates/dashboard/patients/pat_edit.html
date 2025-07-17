@@ -16,6 +16,14 @@
                     </div>
                 </div>
 
+                <div class="sm:col-span-2">
+                    <label for="first-name" class="block text-sm/6 font-medium text-gray-900">Occupation</label>
+                    <div class="mt-2">
+                        {{ form.occupation(placeholder="Occupation", class="block w-full rounded-md bg-white px-3 py-1.5 text-base
+                        text-gray-900 outline-1 -outline-offset-1 outline-gray-300
+                        placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6") }}
+                    </div>
+                </div>
 
                 <div class="sm:col-span-1 sm:col-start-1">
                     <label class="block text-sm/6 font-medium text-gray-900">Rut</label>
@@ -65,40 +73,9 @@
                         <input type="text" id="age_display" class="block w-full rounded-md bg-gray-100 px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 sm:text-sm/6" value="" readonly>
                     </div>
                 </div>
-<script src="{{ url_for('static', filename='js/age_calc.js') }}"></script>
+                    <script src="{{ url_for('static', filename='js/age_calc.js') }}"></script>
                 </div>
-                <div class="sm:col-span-1">
-                    <label class="block text-sm/6 font-medium text-gray-900">Age</label>
-                    <div class="mt-2">
-                        <input type="text" id="age_display" class="block w-full rounded-md bg-gray-100 px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 sm:text-sm/6" value="" readonly>
-                    </div>
-                </div>
-<script>
-    function calculateAge(dateString) {
-        const defaultDate = '1900-01-01';
-        if (!dateString || dateString === defaultDate) return 0;
-        const today = new Date();
-        const dob = new Date(dateString);
-        if (dob > today) return 0;
-        let age = today.getFullYear() - dob.getFullYear();
-        const m = today.getMonth() - dob.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
-            age--;
-        }
-        return age;
-    }
-    function updateAgeField() {
-        const dobInput = document.getElementById('date_of_birth');
-        const ageDisplay = document.getElementById('age_display');
-        let dobValue = dobInput.value;
-        let age = calculateAge(dobValue);
-        ageDisplay.value = age;
-    }
-    document.addEventListener('DOMContentLoaded', function() {
-        updateAgeField();
-        document.getElementById('date_of_birth').addEventListener('change', updateAgeField);
-    });
-</script>
+
                 </div>
 
                 <div class="sm:col-span-1">
