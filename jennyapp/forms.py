@@ -233,6 +233,9 @@ class LoginForm(FlaskForm):
 
 class PatientForm(FlaskForm):
     full_name = StringField('Full Name', validators=[DataRequired(), Length(max=200)])
+    rut_prefix = IntegerField('RUT Prefix', validators=[Optional()])
+    rut_suffix = StringField('RUT Suffix', validators=[Optional(), Length(max=1)])
+    # Ensure the date of birth is not in the future
     date_of_birth = DateField('Date of Birth', format='%Y-%m-%d', default = date(1900, 1, 1))
     gender = SelectField('Gender', choices=[('male', 'Male'), ('female', 'Female'),  ('other', 'Other'), ], default='other')
     email = EmailField('Email', validators=[Optional(), Length(max=120), Email(message='Invalid email address.')])

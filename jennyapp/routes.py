@@ -174,6 +174,8 @@ def add_patient():
     if form.validate_on_submit():
         new_patient = Patient(
             full_name = form.full_name.data,
+            rut_prefix = form.rut_prefix.data,
+            rut_suffix = form.rut_suffix.data,
             # date_of_birth = datetime.strptime(form.date_of_birth.data, '%Y-%m-%d').date(),
             date_of_birth=form.date_of_birth.data,
             gender = form.gender.data,
@@ -226,6 +228,8 @@ def edit_patient(patient_id):
     if request.method == 'POST':
         print(request.form['notifications'])
         edit_patient.full_name = request.form['full_name']
+        edit_patient.rut_prefix = request.form['rut_prefix']
+        edit_patient.rut_suffix = request.form['rut_suffix']
         edit_patient.date_of_birth = datetime.strptime(request.form['date_of_birth'], '%Y-%m-%d').date()
         edit_patient.gender = request.form['gender']
         # edit_patient.email = edit_patient.email

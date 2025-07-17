@@ -45,6 +45,8 @@ class UserProfile(db.Model):
 class Patient(db.Model):
     __tablename__ = 'patients'
     id = db.Column(db.Integer, primary_key=True)
+    rut_prefix = db.Column(db.Integer)
+    rut_suffix = db.Column(db.String(1))
     full_name = db.Column(db.String(200), nullable=False)
     date_of_birth = db.Column(db.DateTime, nullable=True)
     gender = db.Column(db.String(20), nullable=True)
