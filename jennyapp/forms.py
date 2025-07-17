@@ -257,6 +257,7 @@ class PatientForm(FlaskForm):
     emergency_contact_name = StringField('Emergency Contact Name', validators=[Length(max=100)], default='')
     emergency_contact_number = StringField('Emergency Contact Number', validators=[Length(max=20)], default='')
     emergency_contact_relationship = StringField('Emergency Contact Relationship', validators=[Length(max=100)], default='')
+    deceased = BooleanField('Deceased', default=False)
 
 
 class SessionForm(FlaskForm):

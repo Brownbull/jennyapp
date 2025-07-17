@@ -68,6 +68,7 @@ class Patient(db.Model):
     emergency_contact_name = db.Column(db.String(100), nullable=True)
     emergency_contact_number = db.Column(db.String(20), nullable=True)
     emergency_contact_relationship = db.Column(db.String(100), nullable=True)
+    deceased = db.Column(db.Boolean, default=False)
 
     sessions = db.relationship('Session', backref='patient', lazy=True)
 

@@ -232,7 +232,7 @@ def edit_patient(patient_id):
         edit_patient.rut_suffix = request.form['rut_suffix']
         edit_patient.date_of_birth = datetime.strptime(request.form['date_of_birth'], '%Y-%m-%d').date()
         edit_patient.gender = request.form['gender']
-        # edit_patient.email = edit_patient.email
+        edit_patient.email = request.form['email']
         edit_patient.phone_number_1 = request.form['phone_number_1']
         edit_patient.phone_number_2 = request.form['phone_number_2']
         edit_patient.address_1 = request.form['address_1']
@@ -248,6 +248,7 @@ def edit_patient(patient_id):
         edit_patient.emergency_contact_name = request.form['emergency_contact_name']
         edit_patient.emergency_contact_number = request.form['emergency_contact_number']
         edit_patient.emergency_contact_relationship = request.form['emergency_contact_relationship']
+        edit_patient.deceased = True if request.form['notifications']  == 'y' else False
         db.session.commit()
         print("Patient updated")
         return redirect(url_for('main.patients'))

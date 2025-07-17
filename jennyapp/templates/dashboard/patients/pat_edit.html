@@ -16,8 +16,9 @@
                     </div>
                 </div>
 
+
                 <div class="sm:col-span-1 sm:col-start-1">
-                    <label for="username" class="block text-sm/6 font-medium text-gray-900">Rut</label>
+                    <label class="block text-sm/6 font-medium text-gray-900">Rut</label>
                     <div class="mt-2">
                         <div
                             class="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
@@ -29,7 +30,7 @@
                 </div>
                 
                 <div class="sm:col-span-1">
-                    <label for="username" class="block text-sm/6 font-medium text-gray-900">Rut last digit</label>
+                    <label class="block text-sm/6 font-medium text-gray-900">Rut last digit</label>
                     <div class="mt-2">
                         <div
                             class="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
@@ -40,8 +41,18 @@
                     </div>
                 </div>
 
+                <div class="sm:col-span-1">
+                    <label class="block text-sm/6 font-medium text-gray-900">Deceased</label>
+                    <div class="mt-2">
+                        <div class="flex items-center bg-white pl-3 focus-within:outline-indigo-600">
+                            {{ form.deceased(class="mr-2 align-middle") }}
+                            <span class="text-base text-gray-900"></span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="sm:col-span-2 sm:col-start-1">
-                    <label for="username" class="block text-sm/6 font-medium text-gray-900">Date of Birth</label>
+                    <label class="block text-sm/6 font-medium text-gray-900">Date of Birth</label>
                     <div class="mt-2">
                         <div class="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
                             {{ form.date_of_birth( class="block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none
@@ -51,7 +62,7 @@
                 </div>
 
                 <div class="sm:col-span-1">
-                    <label for="username" class="block text-sm/6 font-medium text-gray-900">Gender</label>
+                    <label class="block text-sm/6 font-medium text-gray-900">Gender</label>
                     <div class="mt-2 grid grid-cols-1">
                         {{ form.gender(class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1
                         -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6")}}
@@ -74,7 +85,7 @@
                 </div>
 
                 <div class="sm:col-span-2 sm:col-start-1">
-                    <label for="username" class="block text-sm/6 font-medium text-gray-900">Phone Number 1</label>
+                    <label class="block text-sm/6 font-medium text-gray-900">Phone Number 1</label>
                     <div class="mt-2">
                         <div
                             class="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
@@ -85,7 +96,7 @@
                 </div>
 
                 <div class="sm:col-span-2">
-                    <label for="username" class="block text-sm/6 font-medium text-gray-900">Phone Number 2</label>
+                    <label class="block text-sm/6 font-medium text-gray-900">Phone Number 2</label>
                     <div class="mt-2">
                         <div
                             class="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
@@ -190,7 +201,7 @@
                 </div>
 
                 <div class="sm:col-span-2 sm:col-start-1">
-                    <label for="username" class="block text-sm/6 font-medium text-gray-900">Phone Number</label>
+                    <label class="block text-sm/6 font-medium text-gray-900">Phone Number</label>
                     <div class="mt-2">
                         <div
                             class="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
