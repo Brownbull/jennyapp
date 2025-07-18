@@ -71,6 +71,7 @@ def add():
     current_date = datetime.now() 
 
     if form.validate_on_submit():
+        # Collect patient data from the form fields
         patient_data = {
             'full_name': form.full_name.data,
             'occupation': form.occupation.data,
@@ -185,9 +186,6 @@ def edit(patient_id):
 
     # Render the edit form template with the context data
     return render_template('dashboard/patients/pat_edit.html', **context)
-
-
-
 
 @patient_bp.route('/delete/<int:patient_id>', methods=['GET', 'POST'])
 @login_required

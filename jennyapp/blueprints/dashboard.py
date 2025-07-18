@@ -10,6 +10,11 @@ dashboard_bp = Blueprint('dashboard', __name__, url_prefix='/dashboard')
 @dashboard_bp.route('/dashboard')
 @login_required
 def index():
+    """
+    The main dashboard view for medics. Shows incoming and past sessions.
+
+    :returns: A rendered template of the dashboard.
+    """
     incoming_sessions = []
     past_sessions = []
     
@@ -31,12 +36,26 @@ def index():
 
     return render_template('dashboard/dashboard.html', **context)
 
-
-
-
 @dashboard_bp.route('/payments')
 @login_required
 def payments():
+    """
+    The payments view for medics. Shows all past sessions with payments.
+
+    The sessions are filtered by the following parameters:
+
+    :param sort: The sort order, either 'asc' or 'desc'.
+    :param doctor: The email of the doctor to filter sessions by.
+    :param patient: The full name of the patient to filter sessions by.
+    :param rut: The rut of the patient to filter sessions by.
+    :param from_date: The date to filter sessions from.
+    :param to_date: The date to filter sessions to.
+    :param payment_status: The payment status to filter sessions by, either 'paid' or 'unpaid'.
+
+    :returns: A rendered template of the payments page.
+    """
+    # Get the field from the url parameters.
+    # If it's not present, then use default.
     sort = request.args.get('sort', 'desc')
     doctor = request.args.get('doctor', '')
     patient = request.args.get('patient', '')
@@ -45,13 +64,15 @@ def payments():
     to_date = request.args.get('to_date', '')
     payment_status = request.args.get('payment_status', '')
 
+    # Get the filtered sessions based on the parameters above.
     sessions = get_filtered_sessions(sort, doctor, patient, rut, from_date, to_date, payment_status)
 
-    # For filter dropdowns
+    # Get the lists of doctors, patients, and ruts for the filter dropdowns.
     doctor_list = get_users_email_list()
     patient_list = get_patients_full_name_list()
     rut_list = get_patients_rut_list()
 
+    # Create a context dictionary with the sessions and the filter parameters.
     context = {
         'sessions': sessions,
         'sort': sort,
@@ -66,4 +87,5 @@ def payments():
         'rut_list': rut_list,
     }
 
+    # Render the payments template with the context dictionary.
     return render_template('dashboard/sessions/ses_payments.html', **context)
