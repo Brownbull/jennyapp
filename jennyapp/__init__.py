@@ -1,4 +1,5 @@
 from flask import Flask, url_for
+import os
 # from flask_login import LoginManager
 
 from .commands import create_tables
@@ -11,7 +12,7 @@ from .models import User
 def create_app():
   app = Flask(__name__)
 
-  app.config.from_prefixed_env()
+  app.config.from_prefixed_env()    
 
   db.init_app(app)
   migrate.init_app(app, db)
