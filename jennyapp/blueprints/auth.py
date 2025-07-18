@@ -1,9 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for
 from flask_login import login_user, login_required, logout_user
-from datetime import datetime
 
-from ..models import User
-from ..extensions import db
 from ..forms import RegisterForm, LoginForm
 from ..services.user_service import add_user, user_email_exists, check_user_credentials
 

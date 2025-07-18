@@ -1,5 +1,3 @@
-from flask_login import login_user
-from flask import redirect, url_for
 from datetime import datetime
 
 from jennyapp.extensions import db
