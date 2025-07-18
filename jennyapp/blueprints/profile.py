@@ -83,4 +83,4 @@ def delete(user_id):
         db.session.delete(session)
     db.session.delete(user)
     db.session.commit()
-    return redirect(url_for('dashboard.index'))
+    return redirect(url_for('index.index'))

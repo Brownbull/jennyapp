@@ -5,34 +5,26 @@ from datetime import datetime
 from ..models import User
 from ..extensions import db
 from ..forms import RegisterForm, LoginForm
+from ..services.user_service import add_user, user_email_exists
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    error = None
-    form = RegisterForm()
+    registration_form = RegisterForm()
 
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user:
-            error = "Email address already exists. Please use a different email."
+    if registration_form.validate_on_submit():
+        if user_email_exists(registration_form.email.data):
+            registration_form.email.errors.append('Email address already exists. Please use a different email.')
         else:
-            register_user = User(
-                email=form.email.data,
-                password=form.password.data,
-                join_date=datetime.now()
+            new_user = add_user(
+                email = registration_form.email.data,
+                password = registration_form.password.data
             )
-            db.session.add(register_user)
-            db.session.commit()
-            login_user(register_user, remember=False) 
+            login_user(new_user, remember=False)
             return redirect(url_for('dashboard.index'))
-        
-    context = {
-        'form': form,
-        'error': error
-    }
-    return render_template('register.html', **context)
+
+    return render_template('register.html', form=registration_form)
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
