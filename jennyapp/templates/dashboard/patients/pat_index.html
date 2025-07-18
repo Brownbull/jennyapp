@@ -8,7 +8,7 @@
                 email and role.</p>
         </div>
         <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-            <a href="{{ url_for('main.add_patient') }}"
+            <a href="{{ url_for('patient.add') }}"
                 class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                 Add patient</a>
         </div>
@@ -51,16 +51,16 @@
                             </td>
                             <td
                                 class="hidden border-b border-gray-200 px-3 py-4 text-sm whitespace-nowrap text-gray-500 sm:table-cell">
-                                <a href="{{ url_for('main.sessions', patient=item.patient.full_name) }}" class="text-indigo-600 hover:text-indigo-900">{{ item.session_count }}</a>
+                                <a href="{{ url_for('session.index', patient=item.patient.full_name) }}" class="text-indigo-600 hover:text-indigo-900">{{ item.session_count }}</a>
                             </td>
                             <td
                                 class="relative border-b border-gray-200 py-4 pr-4 pl-3 text-left text-sm font-medium whitespace-nowrap sm:pr-8 lg:pr-8">
-                                <a href="{{ url_for('main.edit_patient', patient_id=item.patient.id) }}"
+                                <a href="{{ url_for('patient.edit', patient_id=item.patient.id) }}"
                                    class="inline-block rounded-md bg-indigo-100 px-3 py-1 text-sm font-semibold text-indigo-700 hover:bg-indigo-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mr-2">
                                     Edit
                                     <span class="sr-only">{{ item.patient.full_name }}</span>
                                 </a>
-                                <a href="{{ url_for('main.edit_session') }}?patient_id={{ item.patient.id }}"
+                                <a href="{{ url_for('session.edit') }}?patient_id={{ item.patient.id }}"
                                    class="inline-block rounded-md bg-green-100 px-3 py-1 text-sm font-semibold text-green-700 hover:bg-green-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
                                     New Session
                                 </a>

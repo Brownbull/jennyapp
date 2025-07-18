@@ -268,7 +268,7 @@ class SessionForm(FlaskForm):
     session_time = TimeField('Time', format='%H:%M', default = datetime.now().time())
     # MEDICAL
     consent = BooleanField('Consent', default=False)
-    symptoms = TextAreaField('Symptoms', validators=[DataRequired(), Length(max=200)])
+    symptoms = TextAreaField('Symptoms', validators=[Length(max=200)])
     medications = TextAreaField('Medications', validators=[Length(max=200)], default='')
     treatment = TextAreaField('Treatment', validators=[Length(max=200)], default='')
     notes = TextAreaField('Notes', validators=[Length(max=500)], default='')

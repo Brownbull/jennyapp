@@ -4,7 +4,13 @@ import os
 
 from .commands import create_tables
 from .extensions import db, migrate, login_manager
-from .routes import main
+# from .routes import main
+from .blueprints.index import index_bp
+from .blueprints.auth import auth_bp
+from .blueprints.profile import profile_bp
+from .blueprints.patient import patient_bp
+from .blueprints.session import session_bp
+from .blueprints.dashboard import dashboard_bp
 from .utils import time_since
 
 from .models import User
@@ -28,7 +34,13 @@ def create_app():
   app.add_template_filter(time_since, 'time_since')
 
   # ROUTES
-  app.register_blueprint(main)
+  # app.register_blueprint(main)
+  app.register_blueprint(index_bp)
+  app.register_blueprint(auth_bp)
+  app.register_blueprint(profile_bp)
+  app.register_blueprint(patient_bp)
+  app.register_blueprint(session_bp)
+  app.register_blueprint(dashboard_bp)
   
   # COMMANDS
   app.cli.add_command(create_tables)

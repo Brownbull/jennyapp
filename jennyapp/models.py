@@ -84,7 +84,7 @@ class Session(db.Model):
     session_date = db.Column(db.Date, nullable=False)
     session_time = db.Column(db.Time, nullable=False)
     consent = db.Column(db.Boolean, nullable=True)
-    symptoms = db.Column(db.String(200), nullable=False)
+    symptoms = db.Column(db.String(200), nullable=True)
     medications = db.Column(db.String(200), nullable=True)
     treatment = db.Column(db.String(200), nullable=True)
     notes = db.Column(db.String(500), nullable=True)

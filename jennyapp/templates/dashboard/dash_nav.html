@@ -58,9 +58,9 @@
                         <ul role="list" class="flex flex-1 flex-col gap-y-7">
                             <li>
                                 <ul role="list" class="-mx-2 space-y-1">
-                                    <li class="{% if request.endpoint == 'main.dashboard' %}bg-gray-50 text-indigo-600{% endif %}">
+                                    <li class="{% if request.endpoint == 'dashboard.index' %}bg-gray-50 text-indigo-600{% endif %}">
                                         <!-- Current: "bg-gray-50 text-indigo-600", Default: "text-gray-700 hover:text-indigo-600 hover:bg-gray-50" -->
-                                        <a href="{{ url_for('main.dashboard') }}"
+                                        <a href="{{ url_for('dashboard.index') }}"
                                             class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
                                             <svg class="size-6 shrink-0 text-indigo-600" fill="none" viewBox="0 0 24 24"
                                                 stroke-width="1.5" stroke="currentColor" aria-hidden="true"
@@ -71,8 +71,8 @@
                                             Dashboard
                                         </a>
                                     </li>
-                                    <li class="{% if request.endpoint == 'main.patients' %}bg-gray-50 text-indigo-600{% endif %}">
-                                        <a href="{{ url_for('main.patients') }}"
+                                    <li class="{% if request.endpoint == 'patient.index' %}bg-gray-50 text-indigo-600{% endif %}">
+                                        <a href="{{ url_for('patient.index') }}"
                                             class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
                                             <svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
                                                 fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -83,8 +83,8 @@
                                             Patients
                                         </a>
                                     </li>
-                                    <li class="{% if request.endpoint == 'main.sessions' %}bg-gray-50 text-indigo-600{% endif %}">
-                                        <a href="{{ url_for('main.sessions', doctor=current_user.email) }}  "
+                                    <li class="{% if request.endpoint == 'session.index' %}bg-gray-50 text-indigo-600{% endif %}">
+                                        <a href="{{ url_for('session.index', doctor=current_user.email) }}  "
                                             class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
                                             <svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
                                                 fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -95,8 +95,8 @@
                                             Sessions
                                         </a>
                                     </li>
-                                    <li class="{% if request.endpoint == 'main.payments' %}bg-gray-50 text-indigo-600{% endif %}">
-                                        <a href="{{ url_for('main.payments', doctor=current_user.email) }}  "
+                                    <li class="{% if request.endpoint == 'dashboard.payments' %}bg-gray-50 text-indigo-600{% endif %}">
+                                        <a href="{{ url_for('dashboard.payments', doctor=current_user.email) }}  "
                                             class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
                                             <svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
                                                 fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -143,9 +143,9 @@
                 <ul role="list" class="flex flex-1 flex-col gap-y-7">
                     <li>
                         <ul role="list" class="-mx-2 space-y-1">
-                            <li class="{% if request.endpoint == 'main.dashboard' %}bg-gray-50 outline-hidden{% endif %}">
+                            <li class="{% if request.endpoint == 'dashboard.index' %}bg-gray-50 outline-hidden{% endif %}">
                                 <!-- Current: "bg-gray-50 text-indigo-600", Default: "text-gray-700 hover:text-indigo-600 hover:bg-gray-50" -->
-                                <a href="{{ url_for('main.dashboard') }}"
+                                <a href="{{ url_for('dashboard.index') }}"
                                     class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
                                     <svg class="size-6 shrink-0 text-indigo-600" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
@@ -155,8 +155,8 @@
                                     Dashboard
                                 </a>
                             </li>
-                            <li class="{% if request.endpoint == 'main.patients' %}bg-gray-50 outline-hidden{% endif %}">
-                                <a href="{{ url_for('main.patients') }}"
+                            <li class="{% if request.endpoint == 'patient.index' %}bg-gray-50 outline-hidden{% endif %}">
+                                <a href="{{ url_for('patient.index') }}"
                                     class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
                                     <svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600" fill="none"
                                         viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"
@@ -167,8 +167,8 @@
                                     Patients
                                 </a>
                             </li>
-                            <li>
-                                <a href="{{ url_for('main.sessions', doctor=current_user.email) }} "
+                            <li class="{% if request.endpoint == 'session.index' %}bg-gray-50 outline-hidden{% endif %}">
+                                <a href="{{ url_for('session.index', doctor=current_user.email) }} "
                                     class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
                                     <svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600" fill="none"
                                         viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"
@@ -179,8 +179,8 @@
                                     Sessions
                                 </a>
                             </li>
-                            <li class="{% if request.endpoint == 'main.payments' %}bg-gray-50 text-indigo-600{% endif %}">
-                                <a href="{{ url_for('main.payments', doctor=current_user.email) }}  "
+                            <li class="{% if request.endpoint == 'dashboard.payments' %}bg-gray-50 text-indigo-600{% endif %}">
+                                <a href="{{ url_for('dashboard.payments', doctor=current_user.email) }}  "
                                     class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
                                     <svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
@@ -260,7 +260,7 @@
                             <span class="sr-only">Open user menu</span>
                             {% set user_profile = current_user.user_profile %}
                             {% if user_profile and user_profile.profile_picture %}
-                                <img class="size-8 rounded-full bg-gray-50" src="{{ url_for('main.profile_image', user_id=current_user.id) }}" alt="Profile Photo" />
+                                <img class="size-8 rounded-full bg-gray-50" src="{{ url_for('profile.profile_image', user_id=current_user.id) }}" alt="Profile Photo" />
                             {% else %}
                                 <svg class="size-8 rounded-full text-gray-300 bg-gray-50" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon">
                                     <path fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" clip-rule="evenodd" />
@@ -296,9 +296,9 @@
                         <div class="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-hidden"
                             role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
                             <!-- Active: "bg-gray-50 outline-hidden", Not Active: "" -->
-                            <a href="{{ url_for('main.profile') }}" class="block px-3 py-1 text-sm/6 text-gray-900" role="menuitem" tabindex="-1"
+                            <a href="{{ url_for('profile.index') }}" class="block px-3 py-1 text-sm/6 text-gray-900" role="menuitem" tabindex="-1"
                                 id="user-menu-item-0">Your profile</a>
-                            <a href="{{ url_for('main.logout') }}" class="block px-3 py-1 text-sm/6 text-gray-900" role="menuitem" tabindex="-1"
+                            <a href="{{ url_for('auth.logout') }}" class="block px-3 py-1 text-sm/6 text-gray-900" role="menuitem" tabindex="-1"
                                 id="user-menu-item-1">Sign out</a>
                         </div>
                     </div>

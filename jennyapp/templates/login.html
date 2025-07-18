@@ -10,13 +10,13 @@
                 <h2 class="mt-8 text-2xl/9 font-bold tracking-tight text-gray-900">Sign in to your account</h2>
                 <p class="mt-2 text-sm/6 text-gray-500">
                     Not a member?
-                    <a href="{{ url_for('main.register')}}" class="font-semibold text-indigo-600 hover:text-indigo-500">Join here!</a>
+                    <a href="{{ url_for('auth.register')}}" class="font-semibold text-indigo-600 hover:text-indigo-500">Join here!</a>
                 </p>
             </div>
 
             <div class="mt-10">
                 <div>
-                    <form action="{{ url_for('main.login')}}" method="POST" class="space-y-6">
+                    <form action="{{ url_for('auth.login')}}" method="POST" class="space-y-6">
                         {{ form.csrf_token }}
                         <div>
                             <label for="email" class="block text-sm/6 font-medium text-gray-900">Email address</label>
@@ -96,7 +96,7 @@
                     <div>
                         <p class="mt-2 text-sm/6 text-gray-500">
                             More info?
-                            <a href="{{ url_for('main.index')}}" class="font-semibold text-indigo-600 hover:text-indigo-500">Go back</a>
+                            <a href="{{ url_for('index.index')}}" class="font-semibold text-indigo-600 hover:text-indigo-500">Go back</a>
                         </p>
                     </div>
                 </div>
