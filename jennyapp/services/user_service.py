@@ -15,4 +15,10 @@ def add_user(email, password):
     return new_user
 
 def user_email_exists(email):
-    return User.query.filter_by(email=email).first() is not None
+    return get_user_by_email(email) is not None
+
+def check_user_credentials(email, password):
+    user = get_user_by_email(email)
+    if user and user.verify_password(password):
+        return user
+    return None
