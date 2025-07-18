@@ -222,7 +222,7 @@
                         <div class="flex gap-3">
                             <div class="flex h-6 shrink-0 items-center">
                                 <div class="group grid size-4 grid-cols-1">
-                                    {{ form.notifications(checked=edit_patient.notifications, class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-600
+                                    {{ form.notifications(checked=patient_edited.notifications, class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-600
                                     checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2
                                     focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100
                                     disabled:checked:bg-gray-100 forced-colors:appearance-auto")}}
@@ -254,7 +254,7 @@
             class="text-sm/6 font-semibold text-gray-900">
             Cancel
         </a>
-        <a href="{{ url_for('patient.delete', patient_id=edit_patient.id) }}" type="button" 
+        <a href="{{ url_for('patient.delete', patient_id=patient_edited.id) }}" type="button" 
             class="rounded-md bg-pink-50 px-3 py-2 text-sm font-semibold text-pink-700 shadow-xs hover:bg-pink-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
             Delete
         </a>

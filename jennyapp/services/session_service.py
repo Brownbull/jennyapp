@@ -13,6 +13,23 @@ def get_doctor_sessions(doctor_email):
     """
     return Session.query.filter_by(doctor_email=doctor_email).all()
 
+def get_doctor_session_count(doctor_email):
+    """
+    Get the count of all sessions for a given doctor.
+
+    :param doctor_email: string representing doctor's email
+    :return: integer count of sessions
+    """
+    return Session.query.filter_by(doctor_email=doctor_email).count()
+
+def get_patient_session_count(patient_id):
+    """
+    Get the count of all sessions for a given patient.
+
+    :param patient_id: integer representing patient's ID
+    :return: integer count of sessions
+    """
+    return Session.query.filter_by(patient_id=patient_id).count()
 
 def is_incoming_session(session, now):
     """
@@ -106,3 +123,14 @@ def get_filtered_sessions(sort_order, doctor_email, patient_full_name, rut_prefi
         query = query.order_by(Session.session_date.desc(), Session.session_time.desc())
     
     return query.all()
+
+def del_sessions_by_patient_id(patient_id):
+    """
+    Deletes all sessions associated with a patient by their ID.
+
+    :param patient_id: The ID of the patient whose sessions are to be deleted.
+    """
+    sessions = Session.query.filter_by(patient_id=patient_id).all()
+    for session in sessions:
+        db.session.delete(session)
+    db.session.commit()

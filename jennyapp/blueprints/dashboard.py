@@ -1,8 +1,6 @@
 from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
-from datetime import datetime
 
-from ..models import Session, Patient, User
 from ..services.user_service import get_users_email_list
 from ..services.patient_service import get_patients_full_name_list, get_patients_rut_list
 from ..services.session_service import get_doctor_sessions, get_inc_past_sessions, sort_sessions_by_datetime, get_filtered_sessions
@@ -67,4 +65,5 @@ def payments():
         'patient_list': patient_list,
         'rut_list': rut_list,
     }
+
     return render_template('dashboard/sessions/ses_payments.html', **context)
