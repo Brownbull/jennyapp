@@ -6,6 +6,7 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 
 from jennyapp.services.user_service import get_userprofile_by_user_id
+from jennyapp.services.session_service import get_doctor_session_count_by_id
 
 from ..models import User, Session, UserProfile
 from ..extensions import db
@@ -23,29 +24,30 @@ def index():
     user_profile = get_userprofile_by_user_id(current_user.id)
 
     # Calculate session count for current user
-    session_count = Session.query.filter_by(user_id=current_user.id).count()
-    
-    if request.method == 'POST' and form.validate_on_submit():
-        user_profile.about = form.about.data
-        user_profile.full_name = form.full_name.data
-        user_profile.email = current_user.email  # Email is not editable
-        user_profile.phone_number_1 = form.phone_number_1.data
-        user_profile.phone_number_2 = form.phone_number_2.data
-        user_profile.address_1 = form.address_1.data
-        user_profile.address_2 = form.address_2.data
-        user_profile.city = form.city.data
-        user_profile.region = form.region.data
-        user_profile.country = form.country.data
-        user_profile.zip_code = form.zip_code.data
-        user_profile.notifications = form.notifications.data
-        # Handle profile picture upload
-        if form.profile_picture.data:
-            file = form.profile_picture.data
-            filename = secure_filename(file.filename)
-            user_profile.profile_picture_filename = filename
-            user_profile.profile_picture = file.read()
-        db.session.commit()
-        return redirect(url_for('profile.index'))
+    session_count = get_doctor_session_count_by_id(current_user.id)
+
+    if request.method == 'POST': # HEREEEEEEEEEEEE!
+        if form.validate_on_submit():
+            user_profile.about = form.about.data
+            user_profile.full_name = form.full_name.data
+            user_profile.email = current_user.email  # Email is not editable
+            user_profile.phone_number_1 = form.phone_number_1.data
+            user_profile.phone_number_2 = form.phone_number_2.data
+            user_profile.address_1 = form.address_1.data
+            user_profile.address_2 = form.address_2.data
+            user_profile.city = form.city.data
+            user_profile.region = form.region.data
+            user_profile.country = form.country.data
+            user_profile.zip_code = form.zip_code.data
+            user_profile.notifications = form.notifications.data
+            # Handle profile picture upload
+            if form.profile_picture.data:
+                file = form.profile_picture.data
+                filename = secure_filename(file.filename)
+                user_profile.profile_picture_filename = filename
+                user_profile.profile_picture = file.read()
+            db.session.commit()
+            return redirect(url_for('profile.index'))
     else:
         # Pre-fill form with existing profile data
         if user_profile:
