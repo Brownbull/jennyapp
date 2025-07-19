@@ -229,8 +229,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (sessionCount && parseInt(sessionCount) > 0) {
                 msg += '\nAll sessions (' + sessionCount + ') associated to this user will be deleted.';
             }
-            if (confirm(msg)) {
-                window.location.href = deleteBtn.href;
+             if (!confirm(msg)) {
+                e.preventDefault(); // Prevent navigation if cancelled
             }
         });
     }

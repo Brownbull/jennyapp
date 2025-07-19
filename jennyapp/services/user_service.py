@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from jennyapp.extensions import db
-from jennyapp.models import User
+from jennyapp.models import User, UserProfile
 
 def get_user_by_email(email):
     """Return the user with the given email address, or None if no user is found.
@@ -11,9 +11,20 @@ def get_user_by_email(email):
     """
     return User.query.filter_by(email=email).first()
 
-def add_user(email, password):
+def get_userprofile_by_user_id(user_id):
+    """Return the UserProfile object for the given user_id, or create a new one if it doesn't exist.
+
+    :param user_id: The ID of the user to retrieve the profile for.
+    :return: The UserProfile object associated with the given user_id.
     """
-    Create a new user and add it to the database.
+    user_profile = UserProfile.query.filter_by(user_id=user_id).first()
+    if not user_profile:
+        user_profile = UserProfile(user_id=user_id)
+        db.session.add(user_profile)
+    return user_profile
+
+def add_user(email, password):
+    """Create a new user and add it to the database.
 
     :param email: The email address of the new user.
     :param password: The password for the new user.

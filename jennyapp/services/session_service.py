@@ -13,14 +13,14 @@ def get_doctor_sessions(doctor_email):
     """
     return Session.query.filter_by(doctor_email=doctor_email).all()
 
-def get_doctor_session_count(doctor_email):
+def get_doctor_session_count_by_id(doctor_id):
     """
     Get the count of all sessions for a given doctor.
 
-    :param doctor_email: string representing doctor's email
+    :param doctor_id: integer representing doctor's ID
     :return: integer count of sessions
     """
-    return Session.query.filter_by(doctor_email=doctor_email).count()
+    return Session.query.filter_by(user_id = doctor_id).count()
 
 def get_patient_session_count(patient_id):
     """

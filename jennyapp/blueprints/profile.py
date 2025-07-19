@@ -1,27 +1,31 @@
+import os
+
 from flask import Blueprint, render_template, redirect, url_for, request, abort
 from flask_login import login_required, current_user
 from datetime import datetime
+from werkzeug.utils import secure_filename
 
-from ..models import User, Session
+from jennyapp.services.user_service import get_userprofile_by_user_id
+
+from ..models import User, Session, UserProfile
 from ..extensions import db
+from ..forms import ProfileForm
 
 profile_bp = Blueprint('profile', __name__, url_prefix='/profile')
 
 @profile_bp.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
-    from ..forms import ProfileForm
-    from ..models import UserProfile
-    from werkzeug.utils import secure_filename
-    import os
+    error = None
     form = ProfileForm()
-    user_profile = UserProfile.query.filter_by(user_id=current_user.id).first()
+
+    # Get the user profile for the current user
+    user_profile = get_userprofile_by_user_id(current_user.id)
+
     # Calculate session count for current user
     session_count = Session.query.filter_by(user_id=current_user.id).count()
+    
     if request.method == 'POST' and form.validate_on_submit():
-        if not user_profile:
-            user_profile = UserProfile(user_id=current_user.id)
-            db.session.add(user_profile)
         user_profile.about = form.about.data
         user_profile.full_name = form.full_name.data
         user_profile.email = current_user.email  # Email is not editable
