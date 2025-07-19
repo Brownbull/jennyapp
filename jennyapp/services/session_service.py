@@ -81,7 +81,7 @@ def sort_sessions_by_datetime(sessions, reverse = False):
 def get_filtered_sessions(sort_order, doctor_email, patient_full_name, rut_prefix,
                           from_date_str, to_date_str, payment_status):
     """
-    Get a list of sessions filtered by the given parameters.
+    Gets a list of sessions filtered by the given parameters.
 
     :param sort_order: string, either 'asc' or 'desc', indicating the order of the sessions
     :param doctor_email: string, doctor's email
@@ -92,36 +92,47 @@ def get_filtered_sessions(sort_order, doctor_email, patient_full_name, rut_prefi
     :param payment_status: string, either 'paid' or 'unpaid', indicating the payment status
     :return: list of Session objects
     """
+    # Start with the base query
     query = Session.query
     
+    # Filter by doctor email if it is not empty
     if doctor_email:
         query = query.filter(Session.doctor_email == doctor_email)
+    
+    # Filter by patient full name if it is not empty
     if patient_full_name:
         query = query.filter(Session.patient_full_name == patient_full_name)
+    
+    # Filter by rut prefix if it is not empty
+    # This involves joining the Patient table to compare the rut prefix
     if rut_prefix:
         query = query.join(Patient).filter(Patient.rut_prefix == rut_prefix)
+    
+    # Filter by payment status if it is not empty
     if payment_status:
         query = query.filter(Session.payment_status == payment_status)
     
-    if from_date_str:
+    # Filter by date range if either the from date or to date is not empty
+    if from_date_str or to_date_str:
+        # Try to parse the dates
         try:
-            from_date = datetime.strptime(from_date_str, '%Y-%m-%d').date()
-            query = query.filter(Session.session_date >= from_date)
+            if from_date_str:
+                from_date = datetime.strptime(from_date_str, '%Y-%m-%d').date()
+                query = query.filter(Session.session_date >= from_date)
+            if to_date_str:
+                to_date = datetime.strptime(to_date_str, '%Y-%m-%d').date()
+                query = query.filter(Session.session_date <= to_date)
         except ValueError:
+            # If the dates are not in the correct format, ignore the filters
             pass
     
-    if to_date_str:
-        try:
-            to_date = datetime.strptime(to_date_str, '%Y-%m-%d').date()
-            query = query.filter(Session.session_date <= to_date)
-        except ValueError:
-            pass
-    
+    # Sort the sessions
     if sort_order == 'asc':
         query = query.order_by(Session.session_date.asc(), Session.session_time.asc())
     else:
         query = query.order_by(Session.session_date.desc(), Session.session_time.desc())
     
+    # Finally, return the list of filtered sessions
     return query.all()
 
 def del_sessions_by_patient_id(patient_id):

@@ -1,14 +1,12 @@
-import os
-
 from flask import Blueprint, render_template, redirect, url_for, request, abort
 from flask_login import login_required, current_user
 from datetime import datetime
 from werkzeug.utils import secure_filename
 
-from jennyapp.services.user_service import get_userprofile_by_user_id
+from jennyapp.services.user_service import get_userprofile_by_user_id, update_user_profile
 from jennyapp.services.session_service import get_doctor_session_count_by_id
 
-from ..models import User, Session, UserProfile
+from ..models import User, Session
 from ..extensions import db
 from ..forms import ProfileForm
 
@@ -17,56 +15,63 @@ profile_bp = Blueprint('profile', __name__, url_prefix='/profile')
 @profile_bp.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
+    """
+    Handle GET and POST requests for the profile page.
+
+    This function is responsible for rendering the profile page and
+    processing the submission of the profile form.
+
+    On GET requests, this function renders the profile template with the
+    current user's information pre-filled in the form.
+
+    On POST requests, this function validates the form data and updates the
+    user's profile information in the database.
+
+    :return: The rendered template for the profile page.
+    """
     error = None
-    form = ProfileForm()
 
     # Get the user profile for the current user
     user_profile = get_userprofile_by_user_id(current_user.id)
+    form = ProfileForm(obj=user_profile)
 
-    # Calculate session count for current user
-    session_count = get_doctor_session_count_by_id(current_user.id)
-
-    if request.method == 'POST': # HEREEEEEEEEEEEE!
+    if request.method == 'POST':
+        # Validate the form data
         if form.validate_on_submit():
-            user_profile.about = form.about.data
-            user_profile.full_name = form.full_name.data
-            user_profile.email = current_user.email  # Email is not editable
-            user_profile.phone_number_1 = form.phone_number_1.data
-            user_profile.phone_number_2 = form.phone_number_2.data
-            user_profile.address_1 = form.address_1.data
-            user_profile.address_2 = form.address_2.data
-            user_profile.city = form.city.data
-            user_profile.region = form.region.data
-            user_profile.country = form.country.data
-            user_profile.zip_code = form.zip_code.data
-            user_profile.notifications = form.notifications.data
-            # Handle profile picture upload
-            if form.profile_picture.data:
-                file = form.profile_picture.data
-                filename = secure_filename(file.filename)
-                user_profile.profile_picture_filename = filename
-                user_profile.profile_picture = file.read()
-            db.session.commit()
+            # Create a dictionary of the updated user data
+            updated_user_data = {
+                'about': form.about.data,
+                'full_name': form.full_name.data,
+                'email': current_user.email,  # Email is not editable
+                'phone_number_1': form.phone_number_1.data,
+                'phone_number_2': form.phone_number_2.data,
+                'address_1': form.address_1.data,
+                'address_2': form.address_2.data,
+                'city': form.city.data,
+                'region': form.region.data,
+                'country': form.country.data,
+                'zip_code': form.zip_code.data,
+                'notifications': form.notifications.data,
+                'profile_picture': form.profile_picture.data
+            }
+            # Update the user's profile in the database
+            update_user_profile(user_profile, updated_user_data)
+
+            # Redirect the user to the profile page
             return redirect(url_for('profile.index'))
-    else:
-        # Pre-fill form with existing profile data
-        if user_profile:
-            form.about.data = user_profile.about
-            form.full_name.data = user_profile.full_name
-            form.email.data = current_user.email
-            form.phone_number_1.data = user_profile.phone_number_1
-            form.phone_number_2.data = user_profile.phone_number_2
-            form.address_1.data = user_profile.address_1
-            form.address_2.data = user_profile.address_2
-            form.city.data = user_profile.city
-            form.region.data = user_profile.region
-            form.country.data = user_profile.country
-            form.zip_code.data = user_profile.zip_code
-            form.notifications.data = user_profile.notifications
-            form.profile_picture.data = user_profile.profile_picture_filename
-        else:
-            form.email.data = current_user.email
-    return render_template('dashboard/profile.html', form=form, session_count=session_count)
+        
+    # Calculate the session count for the current user
+    session_count = get_doctor_session_count_by_id(current_user.id)        
+
+    # Create a context dictionary to pass to the template
+    context = {
+        'error': error,
+        'form': form,
+        'session_count': session_count
+    }
+
+    # Render the profile template with the context data
+    return render_template('dashboard/profile.html', **context)
 
 @profile_bp.route('/profile_image/<int:user_id>')
 @login_required

@@ -1,4 +1,5 @@
 from datetime import datetime
+from werkzeug.utils import secure_filename
 
 from jennyapp.extensions import db
 from jennyapp.models import User, UserProfile
@@ -21,6 +22,7 @@ def get_userprofile_by_user_id(user_id):
     if not user_profile:
         user_profile = UserProfile(user_id=user_id)
         db.session.add(user_profile)
+        db.session.commit()
     return user_profile
 
 def add_user(email, password):
@@ -34,6 +36,23 @@ def add_user(email, password):
     db.session.add(new_user)
     db.session.commit()
     return new_user
+
+def update_user_profile(user_profile, updated_user_data):
+    for key, value in updated_user_data.items():
+        if key == 'profile_picture':
+            # Handle profile picture upload
+            if value:
+                file = value
+                filename = secure_filename(file.filename)
+                user_profile.profile_picture_filename = filename
+                user_profile.profile_picture = file.read()
+        else:
+            setattr(user_profile, key, value)
+    db.session.add(user_profile)
+    db.session.flush()
+    db.session.commit()
+
+    return user_profile
 
 def user_email_exists(email):
     """Return True if a user with the given email address exists, False otherwise.
