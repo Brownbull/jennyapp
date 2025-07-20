@@ -12,6 +12,22 @@ def get_patient_by_id_or_404(patient_id):
     """
     return Patient.query.get_or_404(patient_id, description=f'Patient with id {patient_id} not found')
 
+def add_patient_by_full_name(full_name):
+    patient = Patient(full_name=full_name)
+    
+    db.session.add(patient)
+    db.session.commit()
+
+    return patient
+
+def get_patient_by_full_name(full_name):
+    patient = Patient.query.filter_by(full_name=full_name).first() 
+
+    if not patient:
+        patient = add_patient_by_full_name(full_name)
+
+    return patient
+
 def edit_patient(patient, updated_patient_data):
     """
     Update an existing patient with the provided data.

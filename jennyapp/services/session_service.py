@@ -1,11 +1,143 @@
 from datetime import datetime
+from werkzeug.utils import secure_filename
 
-from jennyapp.models import Session, Patient
+from jennyapp.models import Session, Patient, SessionDocument, User
 from jennyapp.extensions import db
 
-from jennyapp.services.user_service import get_users_email_list
-from jennyapp.services.patient_service import get_patients_full_name_list, get_patients_rut_list
+from jennyapp.services.user_service import get_user_by_email, get_users_email_list
+from jennyapp.services.patient_service import get_patient_by_full_name, get_patients_full_name_list, get_patients_rut_list
 
+def get_session_form_backrefs(form):    
+    user = get_user_by_email(form.doctor_email.data)
+    patient = get_patient_by_full_name(form.patient_full_name.data)
+        
+    return user, patient
+
+def add_session(form):
+    user, patient = get_session_form_backrefs(form)
+    print("Adding session for user:", user.email, "and patient:", patient.full_name)
+
+    # Create a new session object
+    session_obj = Session(
+        # Backref fields
+        user_id = user.id,
+        patient_id = patient.id,
+        # Form fields
+        doctor_email = form.doctor_email.data,
+        patient_full_name = form.patient_full_name.data,
+        session_date = form.session_date.data,
+        session_time = form.session_time.data,
+        consent = form.consent.data,
+        symptoms = form.symptoms.data,
+        medications = form.medications.data,
+        treatment = form.treatment.data,
+        notes = form.notes.data,
+        payment_method = form.payment_method.data,
+        total_amount = form.total_amount.data,
+        payment_status = form.payment_status.data
+    )
+    db.session.add(session_obj)
+    db.session.commit()
+    print("Session added successfully with ID:", session_obj.id)
+    return session_obj
+
+def update_session(session_obj, form):
+    """
+    Updates a session object with the given form data.
+
+    :param session_obj: The session object to be updated.
+    :param form: The form data containing the updated session information.
+
+    Returns the updated session object.
+    """
+    user, patient = get_session_form_backrefs(form)
+    
+    # Update the session's other fields from the form data.
+    # Backref fields
+    session_obj.user_id = user.id
+    session_obj.patient_id = patient.id
+    # Form fields
+    session_obj.doctor_email = form.doctor_email.data
+    session_obj.patient_full_name = form.patient_full_name.data
+    session_obj.session_date = form.session_date.data
+    session_obj.session_time = form.session_time.data
+    session_obj.consent = form.consent.data
+    session_obj.symptoms = form.symptoms.data
+    session_obj.medications = form.medications.data
+    session_obj.treatment = form.treatment.data
+    session_obj.notes = form.notes.data
+    session_obj.payment_method = form.payment_method.data
+    session_obj.total_amount = form.total_amount.data
+    session_obj.payment_status = form.payment_status.data
+    
+    # Finally, commit the updated session to the database.
+    db.session.commit()
+    return session_obj
+
+def handle_documents(session_obj, form, delete_ids):
+    """
+    Handle the deletion and uploading of session documents.
+
+    :param session_obj: The session object to which the documents belong.
+    :param form: The form data containing document files.
+    :param delete_ids: A comma-separated string of document IDs to be deleted.
+    
+    This function deletes documents specified by `delete_ids` from the database 
+    if they belong to the given session. It also uploads new documents from the form, 
+    saving their binary data and metadata in the database.
+    """
+    # Check if there are any documents to delete
+    if delete_ids:
+        # Split the comma-separated string into individual document IDs
+        for doc_id in delete_ids.split(','):
+            # Remove any surrounding whitespace from the document ID
+            doc_id = doc_id.strip()
+            if doc_id:
+                # Query the database to find the document by its ID
+                doc = SessionDocument.query.get(int(doc_id))
+                # Ensure the document belongs to the session before deleting
+                if doc and doc.session_id == session_obj.id:
+                    db.session.delete(doc)  # Mark the document for deletion
+        # Commit the transaction to delete the marked documents
+        db.session.commit()
+
+    # Check if there are new documents to upload from the form
+    if form.documents.data:
+        # Iterate through each file in the form data
+        for file in form.documents.data:
+            # Ensure the file is not empty and has a filename
+            if file and file.filename:
+                # Secure the filename for safe storage
+                filename = secure_filename(file.filename)
+                # Read the file's binary content
+                file_bytes = file.read()
+                # Create a new SessionDocument object with metadata
+                doc = SessionDocument(
+                    session_id=session_obj.id,  # Associate with the session
+                    filename=filename,          # Store the filename
+                    file_data=file_bytes,       # Store the binary data
+                    upload_date=datetime.now()  # Set the current upload date
+                )
+                db.session.add(doc)  # Add the new document to the session
+        # Commit the transaction to save the uploaded documents
+        db.session.commit()
+
+def get_session_or_404(session_id):
+    """Return a Session object by its id.
+
+    :param session_id: The id of the Session to return.
+    :return: The Session with the given id.
+    :raises 404: If no Session with the given id exists.
+    """
+    return Session.query.get_or_404(session_id, description=f'Session with id {session_id} not found')
+
+def get_session_documents(session_obj):
+    """Get all documents associated with a session.
+
+    :param session_obj: The Session object for which to retrieve documents.
+    :return: A list of SessionDocument objects associated with the session.
+    """
+    return SessionDocument.query.filter_by(session_id=session_obj.id).all()
 
 def get_doctor_sessions(doctor_email):
     """

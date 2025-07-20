@@ -60,7 +60,7 @@
                                     Edit
                                     <span class="sr-only">{{ item.patient.full_name }}</span>
                                 </a>
-                                <a href="{{ url_for('session.edit') }}?patient_id={{ item.patient.id }}"
+                                <a href="{{ url_for('session.edit_get') }}?patient_id={{ item.patient.id }}"
                                    class="inline-block rounded-md bg-green-100 px-3 py-1 text-sm font-semibold text-green-700 hover:bg-green-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
                                     New Session
                                 </a>
