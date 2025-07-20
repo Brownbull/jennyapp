@@ -3,6 +3,9 @@ from datetime import datetime
 from jennyapp.models import Session, Patient
 from jennyapp.extensions import db
 
+from jennyapp.services.user_service import get_users_email_list
+from jennyapp.services.patient_service import get_patients_full_name_list, get_patients_rut_list
+
 
 def get_doctor_sessions(doctor_email):
     """
@@ -134,6 +137,51 @@ def get_filtered_sessions(sort_order, doctor_email, patient_full_name, rut_prefi
     
     # Finally, return the list of filtered sessions
     return query.all()
+
+def get_sessions_context(request):
+    """
+    Get the context for the sessions page, including the filtered sessions and the values of the filters.
+
+    :param request: Flask request object
+    :return: dictionary with the context for the sessions page
+    """
+
+    # Get the sort order from the request query string
+    sort_order = request.args.get('sort', 'desc')
+
+    # Get the filter values from the request query string
+    doctor_email = request.args.get('doctor', '')
+    patient_full_name = request.args.get('patient', '')
+    rut_prefix = request.args.get('rut', '')
+    from_date_str = request.args.get('from_date', '')
+    to_date_str = request.args.get('to_date', '')
+    payment_status = request.args.get('payment_status', '')
+
+    # Get the filtered sessions
+    sessions = get_filtered_sessions(sort_order, doctor_email, patient_full_name, rut_prefix,
+                                    from_date_str, to_date_str, payment_status)
+
+    # Populate dropdown menus
+    doctor_list = get_users_email_list()
+    patient_list = get_patients_full_name_list()
+    rut_list = get_patients_rut_list()
+
+    # Create the context for the sessions page
+    context = {
+        'sessions': sessions,  # The filtered sessions
+        'sort': sort_order,  # The sort order
+        'doctor': doctor_email,  # The doctor filter
+        'patient': patient_full_name,  # The patient filter
+        'rut': rut_prefix,  # The RUT prefix filter
+        'from_date': from_date_str,  # The from date filter
+        'to_date': to_date_str,  # The to date filter
+        'payment_status': payment_status,  # The payment status filter
+        'doctor_list': doctor_list,  # The list of doctors to populate the dropdown menu
+        'patient_list': patient_list,  # The list of patients to populate the dropdown menu
+        'rut_list': rut_list,  # The list of RUT prefixes to populate the dropdown menu
+    }
+
+    return context
 
 def del_sessions_by_patient_id(patient_id):
     """

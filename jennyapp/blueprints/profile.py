@@ -1,11 +1,9 @@
-from flask import Blueprint, render_template, redirect, url_for, request, abort
+from flask import Blueprint, render_template, redirect, url_for, request
 from flask_login import login_required, current_user
 
 from jennyapp.services.user_service import get_userprofile_by_user_id, update_user_profile, get_user_profile_picture, get_user_by_id_or_404, del_user
 from jennyapp.services.session_service import get_doctor_session_count_by_id, del_sessions_by_user_id
 
-from ..models import User, Session
-from ..extensions import db
 from ..forms import ProfileForm
 
 profile_bp = Blueprint('profile', __name__, url_prefix='/profile')
