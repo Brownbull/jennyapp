@@ -145,3 +145,14 @@ def del_sessions_by_patient_id(patient_id):
     for session in sessions:
         db.session.delete(session)
     db.session.commit()
+
+def del_sessions_by_user_id(user_id):
+    """
+    Deletes all sessions associated with a user by their ID.
+
+    :param user_id: The ID of the user whose sessions are to be deleted.
+    """
+    sessions = Session.query.filter_by(user_id=user_id).all()
+    for session in sessions:
+        db.session.delete(session)
+    db.session.commit()

@@ -1,10 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, request, abort
 from flask_login import login_required, current_user
-from datetime import datetime
-from werkzeug.utils import secure_filename
 
-from jennyapp.services.user_service import get_userprofile_by_user_id, update_user_profile
-from jennyapp.services.session_service import get_doctor_session_count_by_id
+from jennyapp.services.user_service import get_userprofile_by_user_id, update_user_profile, get_user_profile_picture, get_user_by_id_or_404, del_user
+from jennyapp.services.session_service import get_doctor_session_count_by_id, del_sessions_by_user_id
 
 from ..models import User, Session
 from ..extensions import db
@@ -60,6 +58,7 @@ def index():
             # Redirect the user to the profile page
             return redirect(url_for('profile.index'))
         
+        
     # Calculate the session count for the current user
     session_count = get_doctor_session_count_by_id(current_user.id)        
 
@@ -76,22 +75,30 @@ def index():
 @profile_bp.route('/profile_image/<int:user_id>')
 @login_required
 def profile_image(user_id):
-    from ..models import UserProfile
-    profile = UserProfile.query.filter_by(user_id=user_id).first()
-    if profile and profile.profile_picture:
-        from flask import send_file
-        import io
-        return send_file(io.BytesIO(profile.profile_picture), mimetype='image/jpeg')  # or detect mimetype
-    abort(404)
+    """
+    Return the profile picture for the user with the given user_id.
+
+    :param user_id: The ID of the user whose profile picture is to be retrieved.
+    :return: The profile picture of the user, or a 404 error if no picture exists.
+    """
+    return get_user_profile_picture(user_id)
 
 @profile_bp.route('/delete/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def delete(user_id):
-    user = User.query.get_or_404(user_id, description=f'User with id {user_id} not found')
+    """
+    Deletes a user and all associated sessions from the database.
+
+    This view function first retrieves the user by their ID. If the user
+    exists, it deletes all sessions associated with the user and then deletes
+    the user from the database. Finally, it redirects to the index page.
+
+    :param user_id: The ID of the user to be deleted.
+    :return: Redirect to the index page after successful deletion.
+    """
+    user = get_user_by_id_or_404(user_id)
     # Delete all sessions associated with this user (medic)
-    sessions = Session.query.filter_by(user_id=user.id).all()
-    for session in sessions:
-        db.session.delete(session)
-    db.session.delete(user)
-    db.session.commit()
+    del_sessions_by_user_id(user_id)
+    # Delete the user
+    del_user(user)
     return redirect(url_for('index.index'))
