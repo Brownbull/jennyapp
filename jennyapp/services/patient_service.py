@@ -3,6 +3,19 @@ from datetime import datetime
 from jennyapp.extensions import db
 from jennyapp.models.patient import Patient
 
+def get_patient_name_by_id_or_404(patient_id):
+    """Return the full name of a patient by their ID.
+
+    :param patient_id: The ID of the patient to return.
+    :return: The full name of the patient.
+    :raises 404: If no patient with the given ID exists.
+    """
+    if patient_id:
+        patient = get_patient_by_id_or_404(patient_id)
+        if patient:
+            return patient.full_name
+    return None
+
 def get_patient_by_id_or_404(patient_id):
     """Return a Patient object by its id.
 

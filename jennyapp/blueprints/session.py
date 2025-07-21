@@ -9,7 +9,7 @@ from ..forms import SessionForm
 
 from jennyapp.services.user_service import get_users_email_list
 from jennyapp.services.patient_service import get_patients_full_name_list, get_patient_by_id_or_404
-from jennyapp.services.session_service import get_sessions_context, get_session_or_404, get_session_documents, update_session, add_session, handle_documents
+from jennyapp.services.session_service import get_sessions_context, get_session_or_404, get_session_documents, init_session_form_main, update_session, add_session, handle_documents
 
 session_bp = Blueprint('session', __name__, url_prefix='/session')
 
@@ -22,35 +22,26 @@ def index():
 @session_bp.route('/edit', methods=['GET'])
 @session_bp.route('/edit/<int:session_id>', methods=['GET'])
 @login_required
-def edit_get(session_id=None):
-    error = None
-    session_obj = None
+def edit_get(session_id = None):
+    """
+    Handles the GET requests for the session edit form.
 
-    if session_id:
-        session_obj = get_session_or_404(session_id)
-        form = SessionForm(obj=session_obj)
+    Routes:
+        - GET '/edit': Display a form to create a new session.
+        - GET '/edit/<int:session_id>': Display a form to edit a specific session.
 
-        existing_docs = get_session_documents(session_obj)
-        form.doctor_email.data = session_obj.doctor_email
-        form.patient_full_name.data = session_obj.patient_full_name
-    else:
-        form = SessionForm()
+    Parameters:
+        session_id (int, optional): The ID of the session to be edited. Defaults to None.
 
-        existing_docs = []
-        form.doctor_email.data = current_user.email
+    Returns:
+        Renders the session edit form with the session data if session_id is provided, or a blank form if not.
+    """
+    rc = None
 
-        # Get patient_id from query params and pre-fill patient name
-        patient_id = request.args.get('patient_id')
-        if patient_id:
-            patient = get_patient_by_id_or_404(patient_id)
-            if patient:
-                form.patient_full_name.data = patient.full_name
-
-    form.doctor_email.choices = get_users_email_list()
-    form.patient_full_name.choices = get_patients_full_name_list()
+    form, existing_docs, session_obj, rc = init_session_form_main(session_id)
 
     context = {
-        'error': error,
+        'error': rc,
         'form': form,
         'session_id': session_id,
         'session_obj': session_obj,

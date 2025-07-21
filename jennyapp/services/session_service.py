@@ -1,19 +1,124 @@
 from datetime import datetime
+from flask import request
+from flask_login import current_user
 from werkzeug.utils import secure_filename
 
+from jennyapp.forms import SessionForm
 from jennyapp.models import Session, Patient, SessionDocument, User
 from jennyapp.extensions import db
 
 from jennyapp.services.user_service import get_user_by_email, get_users_email_list
-from jennyapp.services.patient_service import get_patient_by_full_name, get_patients_full_name_list, get_patients_rut_list
+from jennyapp.services.patient_service import get_patient_by_full_name, get_patient_by_id_or_404, get_patients_full_name_list, get_patients_rut_list, get_patient_name_by_id_or_404
+
+def get_form():
+    """
+    Initialize the session form with the current user's email and the patient's name
+    if the patient_id is provided in the request query string.
+
+    Returns a tuple containing the session form, the existing documents, and the session object.
+    """
+    # Initialize the session form
+    form = SessionForm()
+
+    # Initialize the variables for the return tuple
+    session_obj = None 
+    existing_docs = []
+
+    # Set the doctor's email in the form to the current user's email
+    form.doctor_email.data = current_user.email
+
+    # Get the patient_id from the request query string
+    patient_id = request.args.get('patient_id')
+
+    # If the patient_id is provided in the request query string, set the patient's full name
+    if patient_id:
+        form.patient_full_name.data = get_patient_name_by_id_or_404(patient_id)
+
+    # Get the choices for the form fields
+    get_choices(form)
+
+    return form, existing_docs, session_obj
+
+def get_form_by_id(session_id):
+    """
+    Initialize the session form with data from the session object identified by session_id.
+
+    Parameters:
+        session_id (int): The ID of the session to be edited.
+
+    Returns a tuple containing the session form, the existing documents, and the session object.
+    """
+    # Get the session object from the database using the provided session_id
+    session_obj = get_session_or_404(session_id)
+
+    # Initialize the session form with the session object's data
+    form = SessionForm(obj = session_obj)
+
+    # Get the existing documents associated with the session
+    existing_docs = get_session_documents(session_obj)
+
+    # Set the doctor's email and the patient's full name in the form to the values from the session object
+    form.doctor_email.data = session_obj.doctor_email
+    form.patient_full_name.data = session_obj.patient_full_name
+
+    # Get the choices for the form fields
+    get_choices(form)
+
+    return form, existing_docs, session_obj
+
+def get_choices(form):
+    """
+    Initializes the session form with choices for doctor and patient fields.
+    
+    Parameters:
+        form (SessionForm): The form to be initialized.
+    """
+    form.doctor_email.choices = get_users_email_list()
+    form.patient_full_name.choices = get_patients_full_name_list()
+
+    return form
+
+def init_session_form_main(session_id = None):
+    """
+    Initializes the session form with data from the session object if provided.
+    
+    Parameters:
+        form (SessionForm): The form to be initialized.
+        session_obj (Session, optional): The session object to populate the form with. Defaults to None.
+    """
+    rc = None
+    if session_id:
+        form, existing_docs, session_obj = get_form_by_id(session_id)
+    else:
+        form, existing_docs, session_obj = get_form()
+
+    return form, existing_docs, session_obj, rc
 
 def get_session_form_backrefs(form):    
+    """
+    Gets the user and patient objects based on the data in the given session form.
+
+    Parameters:
+        form (SessionForm): The session form containing the doctor's email and the patient's full name.
+
+    Returns:
+        tuple: A tuple containing the user object and the patient object.
+    """
     user = get_user_by_email(form.doctor_email.data)
     patient = get_patient_by_full_name(form.patient_full_name.data)
         
     return user, patient
 
 def add_session(form):
+    """
+    Adds a new session object to the database using the data from the given session form.
+
+    Parameters:
+        form (SessionForm): The session form containing the doctor's email, the patient's full name, and the session details.
+
+    Returns:
+        Session: The newly created session object.
+    """
     user, patient = get_session_form_backrefs(form)
     print("Adding session for user:", user.email, "and patient:", patient.full_name)
 
