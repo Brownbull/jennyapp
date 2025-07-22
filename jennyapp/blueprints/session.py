@@ -9,7 +9,7 @@ from ..forms import SessionForm
 
 from jennyapp.services.user_service import get_users_email_list
 from jennyapp.services.patient_service import get_patients_full_name_list, get_patient_by_id_or_404
-from jennyapp.services.session_service import get_sessions_context, get_session_or_404, get_session_documents, init_session_form_main, update_session, add_session, handle_documents
+from jennyapp.services.session_service import get_sessions_context, get_session_or_404, get_session_documents, get_form_by_id, get_form, update_session, add_session, handle_documents
 
 session_bp = Blueprint('session', __name__, url_prefix='/session')
 
@@ -37,8 +37,10 @@ def edit_get(session_id = None):
         Renders the session edit form with the session data if session_id is provided, or a blank form if not.
     """
     rc = None
-
-    form, existing_docs, session_obj, rc = init_session_form_main(session_id)
+    if session_id:
+        form, existing_docs, session_obj = get_form_by_id(session_id)
+    else:
+        form, existing_docs, session_obj = get_form()
 
     context = {
         'error': rc,
@@ -79,8 +81,6 @@ def edit_post(session_id=None):
         error = 'Form validation failed. Please check your input.'
 
     existing_docs = get_session_documents(session_obj) if session_obj else []
-
-    print("Form errors:", form.errors)
 
     context = {
         'error': error,

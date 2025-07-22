@@ -78,22 +78,6 @@ def get_choices(form):
 
     return form
 
-def init_session_form_main(session_id = None):
-    """
-    Initializes the session form with data from the session object if provided.
-    
-    Parameters:
-        form (SessionForm): The form to be initialized.
-        session_obj (Session, optional): The session object to populate the form with. Defaults to None.
-    """
-    rc = None
-    if session_id:
-        form, existing_docs, session_obj = get_form_by_id(session_id)
-    else:
-        form, existing_docs, session_obj = get_form()
-
-    return form, existing_docs, session_obj, rc
-
 def get_session_form_backrefs(form):    
     """
     Gets the user and patient objects based on the data in the given session form.
