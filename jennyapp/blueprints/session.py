@@ -10,7 +10,7 @@ from ..forms import SessionForm
 
 from jennyapp.services.user_service import get_users_email_list
 from jennyapp.services.patient_service import get_patients_full_name_list, get_patient_by_id_or_404
-from jennyapp.services.session_service import get_sessions_context, get_session_or_404, get_session_documents, get_form_by_id, get_form, update_session, add_session, handle_documents
+from jennyapp.services.session_service import apply_form_obj, del_session, get_form_obj_from_request, get_sessions_context, get_session_or_404, get_session_documents, get_form_by_id, get_form, update_session, add_session, handle_documents
 
 session_bp = Blueprint('session', __name__, url_prefix='/session')
 
@@ -52,47 +52,26 @@ def edit_get(session_id = None):
     }
     return render_template('dashboard/sessions/ses_edit.html', **context)
 
-
-
 @session_bp.route('/edit', methods=['POST'])
 @session_bp.route('/edit/<int:session_id>', methods=['POST'])
 @login_required
 def edit_post(session_id=None):
     error = None
-    session_obj = None
 
-    # Use both request.form and request.files for file upload fields
-    if session_id:
-        session_obj = get_session_or_404(session_id)
-        form = SessionForm()
-        form.process(formdata=CombinedMultiDict([request.form, request.files]), obj=session_obj)
-    else:
-        form = SessionForm()
-        form.process(request.form, request.files)
-        form.process(formdata=CombinedMultiDict([request.form, request.files]))
-
-    form.doctor_email.choices = get_users_email_list()
-    form.patient_full_name.choices = get_patients_full_name_list()
+    form, session_obj, error = get_form_obj_from_request(session_id)
 
     if form.validate_on_submit():
-        if session_obj:
-            update_session(session_obj, form)
-            delete_ids = request.form.get('delete_documents', '')
-            handle_documents(session_obj, form, delete_ids)
-        else:
-            session_obj = add_session(form)
-            handle_documents(session_obj, form, None)
-            session_id = session_obj.id
-        return redirect(url_for('session.index'))
+        apply_form_obj(form, session_obj)
+        return redirect(url_for('session.index', doctor=current_user.email))
     else:
-        error = 'Form validation failed. Please check your input.'
+        error = form.errors
 
-    existing_docs = get_session_documents(session_obj) if session_obj else []
+    existing_docs = get_session_documents(session_obj)
 
     context = {
         'error': error,
         'form': form,
-        'session_id': session_obj.id if session_obj else None,
+        'session_id': session_obj.id,
         'session_obj': session_obj,
         'existing_docs': existing_docs,
     }
@@ -101,16 +80,6 @@ def edit_post(session_id=None):
 @session_bp.route('/delete/<int:session_id>', methods=['GET', 'POST'])
 @login_required
 def delete(session_id):
-    session = Session.query.get(session_id)
-    if not session:
-        from flask import flash
-        flash(f'Session with id {session_id} not found or already deleted.', 'warning')
-        return redirect(url_for('session.index', doctor=current_user.email))
-    db.session.delete(session)
-    db.session.commit()
-    next_url = request.args.get('next')
-    if next_url:
-        return redirect(next_url)
-    # Redirect to sessions filtered by current user (doctor)
+    del_session(session_id)
     return redirect(url_for('session.index', doctor=current_user.email))
 

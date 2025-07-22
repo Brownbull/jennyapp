@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
 
-from ..services.session_service import get_doctor_sessions, get_inc_past_sessions, sort_sessions_by_datetime, get_sessions_context
+from ..services.session_service import get_doctor_sessions_by_email, get_inc_past_sessions, sort_sessions_by_datetime, get_sessions_context
 
 dashboard_bp = Blueprint('dashboard', __name__, url_prefix='/dashboard')
 
@@ -17,7 +17,7 @@ def index():
     past_sessions = []
     
     # Get sessions for the logged-in medic
-    all_sessions = get_doctor_sessions(current_user.email)
+    all_sessions = get_doctor_sessions_by_email(current_user.email)
 
     if all_sessions:
         # Get incoming and past sessions

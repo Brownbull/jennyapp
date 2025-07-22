@@ -3,7 +3,7 @@ from flask_login import login_required
 from datetime import datetime
 
 from jennyapp.services.patient_service import get_patients, add_patient, get_patient_by_id_or_404, edit_patient, del_patient
-from jennyapp.services.session_service import get_patient_session_count, del_sessions_by_patient_id
+from jennyapp.services.session_service import get_patient_sessions, del_sessions_by_patient_id
 
 from ..forms import PatientForm
 
@@ -34,7 +34,7 @@ def index():
     if patients:
         for patient in patients:
             # Get the count of sessions for the current patient
-            session_count = get_patient_session_count(patient.id)
+            session_count = len(get_patient_sessions(patient.id))
             
             # Append a dictionary containing the patient object and session count to the patient_data list
             patient_data.append({

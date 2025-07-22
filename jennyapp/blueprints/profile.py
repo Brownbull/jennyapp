@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, request
 from flask_login import login_required, current_user
 
 from jennyapp.services.user_service import get_userprofile_by_user_id, update_user_profile, get_user_profile_picture, get_user_by_id_or_404, del_user
-from jennyapp.services.session_service import get_doctor_session_count_by_id, del_sessions_by_user_id
+from jennyapp.services.session_service import del_sessions_by_user_id, get_doctor_sessions
 
 from ..forms import ProfileForm
 
@@ -58,7 +58,7 @@ def index():
         
         
     # Calculate the session count for the current user
-    session_count = get_doctor_session_count_by_id(current_user.id)        
+    session_count = len(get_doctor_sessions(current_user.id))
 
     # Create a context dictionary to pass to the template
     context = {

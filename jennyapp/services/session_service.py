@@ -2,6 +2,7 @@ from datetime import datetime
 from flask import request
 from flask_login import current_user
 from werkzeug.utils import secure_filename
+from werkzeug.datastructures import CombinedMultiDict
 
 from jennyapp.forms import SessionForm
 from jennyapp.models import Session, Patient, SessionDocument, User
@@ -66,30 +67,75 @@ def get_form_by_id(session_id):
 
     return form, existing_docs, session_obj
 
-def post_form(form, session_id=None):
+def get_form_obj_from_request(session_id=None):
     """
-    Handles the POST request for the session form, either creating a new session or updating an existing one.
+    Initialize the session form with the data from the request if session_id is None, or
+    with the data from the session object identified by session_id if it is not None.
 
     Parameters:
-        form (SessionForm): The session form containing the session data.
-        session_id (int, optional): The ID of the session to be updated. Defaults to None.
+        session_id (int, optional): The ID of the session to be edited. Defaults to None.
+
+    Returns a tuple containing the session form, the session object, and an error message if the
+    form is not valid. If session_id is None, the session object will be None.
+    """
+    # Initialize
+    error = None
+    session_obj = None
+    form = SessionForm()
+
+    # If session_id is provided, get the session object from the database
+    if session_id:
+        # Get the session object from the database
+        session_obj = get_session_or_404(session_id)
+
+        # Process the request data and the session object's data into the form
+        form.process(formdata=CombinedMultiDict([request.form, request.files]), obj=session_obj)
+    else:
+        # Process the request data into the form
+        form.process(request.form, request.files)
+
+        # Process the request data and the session object's data into the form (even though session_obj is None)
+        form.process(formdata=CombinedMultiDict([request.form, request.files]))
+
+    # Get the choices for the form fields
+    get_choices(form)
+
+    # Return a tuple containing the session form, the session object, and the error
+    return form, session_obj, error
+
+def apply_form_obj(form, session_obj):
+    """
+    Applies the form data to the given session object. If the session object exists,
+    it updates the session with the form data; otherwise, it creates a new session
+    using the form. It also handles the associated documents for the session, including
+    processing document deletions if specified in the request.
+
+    Parameters:
+        form (SessionForm): The form containing session data.
+        session_obj (Session): The session object to be updated or None if a new session
+            should be created.
 
     Returns:
-        Session: The created or updated session object.
+        tuple: A tuple containing the form and the updated or newly created session object.
     """
-    if session_id:
-        # If a session_id is provided, retrieve the existing session object
-        session_obj = get_session_or_404(session_id)
-        # Update the existing session with the form data
-        session_obj = update_session(session_obj, form)
+
+    # If the session object already exists, update it with the form data
+    if session_obj:
+        # Call the update_session function to update the session in the database
+        update_session(session_obj, form)
+        # Get the IDs of the documents that should be deleted from the request
+        delete_ids = request.form.get('delete_documents', '')
+    # If the session object does not exist, create a new one using the form data
     else:
-        # If no session_id is provided, create a new session
+        # Call the add_session function to add the session to the database
         session_obj = add_session(form)
+        # There are no documents to delete if the session is new
+        delete_ids = None
 
-    # Handle document uploads and deletions
-    handle_documents(session_obj, form, request.form.get('delete_ids', ''))
+    # Call the handle_documents function to handle the documents associated with the session
+    handle_documents(session_obj, form, delete_ids = delete_ids)
 
-    return session_obj
+    return form, session_obj
 
 def get_choices(form):
     """
@@ -188,37 +234,16 @@ def update_session(session_obj, form):
     db.session.commit()
     return session_obj
 
-def handle_documents(session_obj, form, delete_ids):
+def upload_documents(session_obj, form):
     """
-    Handle the deletion and uploading of session documents.
+    Uploads the documents provided in the given form and associates them with the given session.
 
-    :param session_obj: The session object to which the documents belong.
-    :param form: The form data containing document files.
-    :param delete_ids: A comma-separated string of document IDs to be deleted.
-    
-    This function deletes documents specified by `delete_ids` from the database 
-    if they belong to the given session. It also uploads new documents from the form, 
-    saving their binary data and metadata in the database.
+    :param session_obj: The session object to which the documents will be associated.
+    :param form: The form data containing the documents to be uploaded.
+
+    After uploading the documents, the transaction is committed to save the uploaded documents.
     """
-    # Check if there are any documents to delete
-    if delete_ids:
-        print("Deleting documents with IDs:", delete_ids)
-        # Split the comma-separated string into individual document IDs
-        for doc_id in delete_ids.split(','):
-            # Remove any surrounding whitespace from the document ID
-            doc_id = doc_id.strip()
-            if doc_id:
-                # Query the database to find the document by its ID
-                doc = SessionDocument.query.get(int(doc_id))
-                # Ensure the document belongs to the session before deleting
-                if doc and doc.session_id == session_obj.id:
-                    db.session.delete(doc)  # Mark the document for deletion
-        # Commit the transaction to delete the marked documents
-        db.session.commit()
-
-    # Check if there are new documents to upload from the form
     if form.documents.data:
-        print("Uploading new documents for session ID:", session_obj.id)
         # Iterate through each file in the form data
         for file in form.documents.data:
             # Ensure the file is not empty and has a filename
@@ -238,6 +263,50 @@ def handle_documents(session_obj, form, delete_ids):
         # Commit the transaction to save the uploaded documents
         db.session.commit()
 
+def delete_documents(session_obj, delete_ids=None):
+    """
+    Deletes documents associated with a session based on provided document IDs.
+
+    Parameters:
+        session_obj: The session object to which the documents belong.
+        delete_ids (str, optional): A comma-separated string of document IDs to be deleted.
+
+    This function iterates over the provided document IDs, checks if each document belongs
+    to the given session, and marks it for deletion. It commits the transaction to remove
+    the documents from the database.
+    """
+    # Split the comma-separated string into individual document IDs
+    if delete_ids:
+        for doc_id in delete_ids.split(','):
+            # Remove any surrounding whitespace from the document ID
+            doc_id = doc_id.strip()
+            if doc_id:
+                # Query the database to find the document by its ID
+                doc = SessionDocument.query.get(int(doc_id))
+                # Ensure the document belongs to the session before deleting
+                if doc and doc.session_id == session_obj.id:
+                    db.session.delete(doc)  # Mark the document for deletion
+        # Commit the transaction to delete the marked documents
+        db.session.commit()
+
+def handle_documents(session_obj, form, delete_ids):
+    """
+    Handle the deletion and uploading of session documents.
+
+    :param session_obj: The session object to which the documents belong.
+    :param form: The form data containing document files.
+    :param delete_ids: A comma-separated string of document IDs to be deleted.
+    
+    This function deletes documents specified by `delete_ids` from the database 
+    if they belong to the given session. It also uploads new documents from the form, 
+    saving their binary data and metadata in the database.
+    """
+    # Check if there are any documents to delete
+    delete_documents(session_obj, delete_ids)
+
+    # Check if there are new documents to upload from the form
+    upload_documents(session_obj, form)
+
 def get_session_or_404(session_id):
     """Return a Session object by its id.
 
@@ -253,34 +322,34 @@ def get_session_documents(session_obj):
     :param session_obj: The Session object for which to retrieve documents.
     :return: A list of SessionDocument objects associated with the session.
     """
-    return SessionDocument.query.filter_by(session_id=session_obj.id).all()
+    return SessionDocument.query.filter_by(session_id=session_obj.id).all() if session_obj else []
 
-def get_doctor_sessions(doctor_email):
+def get_doctor_sessions(doctor_id):
     """
     Get all sessions for a given doctor.
 
     :param doctor_email: string representing doctor's email
     :return: list of Session objects
     """
+    return Session.query.filter_by(user_id=doctor_id).all()
+
+def get_doctor_sessions_by_email(doctor_email):
+    """
+    Get all sessions for a given doctor by their email.
+
+    :param doctor_email: string representing doctor's email
+    :return: list of Session objects
+    """
     return Session.query.filter_by(doctor_email=doctor_email).all()
 
-def get_doctor_session_count_by_id(doctor_id):
+def get_patient_sessions(patient_id):
     """
-    Get the count of all sessions for a given doctor.
-
-    :param doctor_id: integer representing doctor's ID
-    :return: integer count of sessions
-    """
-    return Session.query.filter_by(user_id = doctor_id).count()
-
-def get_patient_session_count(patient_id):
-    """
-    Get the count of all sessions for a given patient.
+    Get all sessions for a given patient.
 
     :param patient_id: integer representing patient's ID
-    :return: integer count of sessions
+    :return: list of Session objects
     """
-    return Session.query.filter_by(patient_id=patient_id).count()
+    return Session.query.filter_by(patient_id=patient_id).all()
 
 def is_incoming_session(session, now):
     """
@@ -431,13 +500,22 @@ def get_sessions_context(request):
 
     return context
 
+def del_session(session_id):
+    session = get_session_or_404(session_id)
+    session_docs = get_session_documents(session)
+    if session_docs:
+        for doc in session_docs:
+            db.session.delete(doc)
+    db.session.delete(session)
+    db.session.commit()
+
 def del_sessions_by_patient_id(patient_id):
     """
     Deletes all sessions associated with a patient by their ID.
 
     :param patient_id: The ID of the patient whose sessions are to be deleted.
     """
-    sessions = Session.query.filter_by(patient_id=patient_id).all()
+    sessions = get_patient_sessions(patient_id)
     for session in sessions:
         db.session.delete(session)
     db.session.commit()
@@ -448,7 +526,7 @@ def del_sessions_by_user_id(user_id):
 
     :param user_id: The ID of the user whose sessions are to be deleted.
     """
-    sessions = Session.query.filter_by(user_id=user_id).all()
+    sessions = get_doctor_sessions(user_id)
     for session in sessions:
         db.session.delete(session)
     db.session.commit()
