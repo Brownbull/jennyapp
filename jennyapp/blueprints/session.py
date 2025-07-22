@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, request
 from flask_login import login_required, current_user
 from datetime import datetime
 from werkzeug.utils import secure_filename
+from werkzeug.datastructures import CombinedMultiDict
 
 from ..models import Patient, Session, User, SessionDocument
 from ..extensions import db
@@ -52,6 +53,7 @@ def edit_get(session_id = None):
     return render_template('dashboard/sessions/ses_edit.html', **context)
 
 
+
 @session_bp.route('/edit', methods=['POST'])
 @session_bp.route('/edit/<int:session_id>', methods=['POST'])
 @login_required
@@ -59,11 +61,15 @@ def edit_post(session_id=None):
     error = None
     session_obj = None
 
+    # Use both request.form and request.files for file upload fields
     if session_id:
         session_obj = get_session_or_404(session_id)
-        form = SessionForm(request.form, obj=session_obj)
+        form = SessionForm()
+        form.process(formdata=CombinedMultiDict([request.form, request.files]), obj=session_obj)
     else:
-        form = SessionForm(request.form)
+        form = SessionForm()
+        form.process(request.form, request.files)
+        form.process(formdata=CombinedMultiDict([request.form, request.files]))
 
     form.doctor_email.choices = get_users_email_list()
     form.patient_full_name.choices = get_patients_full_name_list()
@@ -77,6 +83,7 @@ def edit_post(session_id=None):
             session_obj = add_session(form)
             handle_documents(session_obj, form, None)
             session_id = session_obj.id
+        return redirect(url_for('session.index'))
     else:
         error = 'Form validation failed. Please check your input.'
 
@@ -85,9 +92,9 @@ def edit_post(session_id=None):
     context = {
         'error': error,
         'form': form,
-        'session_id': session_id,
+        'session_id': session_obj.id if session_obj else None,
         'session_obj': session_obj,
-        'existing_docs': existing_docs
+        'existing_docs': existing_docs,
     }
     return render_template('dashboard/sessions/ses_edit.html', **context)
 

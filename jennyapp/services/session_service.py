@@ -66,6 +66,31 @@ def get_form_by_id(session_id):
 
     return form, existing_docs, session_obj
 
+def post_form(form, session_id=None):
+    """
+    Handles the POST request for the session form, either creating a new session or updating an existing one.
+
+    Parameters:
+        form (SessionForm): The session form containing the session data.
+        session_id (int, optional): The ID of the session to be updated. Defaults to None.
+
+    Returns:
+        Session: The created or updated session object.
+    """
+    if session_id:
+        # If a session_id is provided, retrieve the existing session object
+        session_obj = get_session_or_404(session_id)
+        # Update the existing session with the form data
+        session_obj = update_session(session_obj, form)
+    else:
+        # If no session_id is provided, create a new session
+        session_obj = add_session(form)
+
+    # Handle document uploads and deletions
+    handle_documents(session_obj, form, request.form.get('delete_ids', ''))
+
+    return session_obj
+
 def get_choices(form):
     """
     Initializes the session form with choices for doctor and patient fields.
@@ -177,6 +202,7 @@ def handle_documents(session_obj, form, delete_ids):
     """
     # Check if there are any documents to delete
     if delete_ids:
+        print("Deleting documents with IDs:", delete_ids)
         # Split the comma-separated string into individual document IDs
         for doc_id in delete_ids.split(','):
             # Remove any surrounding whitespace from the document ID
@@ -192,6 +218,7 @@ def handle_documents(session_obj, form, delete_ids):
 
     # Check if there are new documents to upload from the form
     if form.documents.data:
+        print("Uploading new documents for session ID:", session_obj.id)
         # Iterate through each file in the form data
         for file in form.documents.data:
             # Ensure the file is not empty and has a filename
