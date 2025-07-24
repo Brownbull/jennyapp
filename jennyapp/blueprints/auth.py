@@ -52,7 +52,7 @@ def register():
     }
 
     # Render the template for the registration form
-    return render_template('index/register.html', **context)
+    return render_template('index/auth/register.html', **context)
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -94,7 +94,7 @@ def login():
     }
 
     # Render the login.html template, passing the context dictionary
-    return render_template('index/login.html', **context)
+    return render_template('index/auth/login.html', **context)
 
 @auth_bp.route('/logout')
 @login_required
