@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-white">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Jenny App{% endblock %}</title>
+    {% block head %}{% endblock %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.css') }}">
+</head>
+<body class="h-full {% block body_class %}{% endblock %}">
+    {% block navbar %}
+        {% include 'index/navbar/main.html' %}
+    {% endblock %}
+
+    {% include 'components/flash.html' %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block footer %}{% endblock %}
+
+    {% block scripts %}
+        <script src="{{ url_for('static', filename='js/header-menu.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/dashboard-menu.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/documents-menu.js') }}"></script>
+    {% endblock %}
+</body>
+</html>

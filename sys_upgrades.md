@@ -1,0 +1,32 @@
+- 2025-08-08 - Configuration: Split settings per environment (development/staging/production) using environment variables; default to secure values; add a config.py with classes; never commit secrets.
+- 2025-08-08 - Secret management: Load secrets from the environment or a secret store (PythonAnywhere vars, Azure Key Vault, AWS SSM); remove sensitive values from repo; rotate keys regularly.
+- 2025-08-08 - Server/runtime: Run behind a proper WSGI server (e.g., gunicorn on Linux) with Nginx reverse proxy and HTTPS; for PythonAnywhere ensure Force HTTPS + HSTS.
+- 2025-08-08 - Security headers: Add flask-talisman (or manual) to enforce HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy; tune CSP for Tailwind and local JS.
+- 2025-08-08 - Cookies/session hardening: Set SESSION_COOKIE_SECURE=True, SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE='Lax'; use server-side sessions (Flask-Session + Redis) instead of client cookies for scaling.
+- 2025-08-08 - CSRF: Ensure CSRF protection is enabled for all forms and APIs that mutate state; audit templates for missing CSRF tokens.
+- 2025-08-08 - Rate limiting: Add Flask-Limiter (Redis backend) for login and data-heavy endpoints to mitigate brute-force and abuse.
+- 2025-08-08 - Auth improvements: Add email verification, password reset flow, account lockout/slowdown after failed attempts, optional 2FA for staff accounts.
+- 2025-08-08 - Authorization: Introduce roles/permissions (admin/doctor) and decorators to guard blueprints; centralize permission checks.
+- 2025-08-08 - Dependency hygiene: Pin versions in requirements.txt, add a lock workflow (pip-tools) and vulnerability scans (pip-audit, safety) in CI; schedule weekly updates.
+- 2025-08-08 - Database engine: Migrate from SQLite to PostgreSQL for production; configure SQLAlchemy URL via env; enable connection pooling and sensible timeouts.
+- 2025-08-08 - Migrations: Keep Alembic current; add pre-deploy migration step in CI/CD; create indexes for frequent lookups (patient.rut_prefix, patient.full_name, session.session_date, session.doctor_email).
+- 2025-08-08 - Backups & DR: Automate daily DB backups with retention; test restore procedures quarterly; back up uploaded media; document disaster recovery runbooks.
+- 2025-08-08 - File uploads: Validate MIME/type/size, sanitize filenames, store outside repo; consider S3/Cloud storage with signed URLs; generate thumbnails server-side if needed.
+- 2025-08-08 - Observability: Centralize structured logging (JSON) with correlation IDs; ship to a log service; add error monitoring (Sentry/Rollbar) with release tags.
+- 2025-08-08 - Metrics/health: Add /healthz and /readyz; expose Prometheus metrics (prometheus_client) for requests, DB latency; add uptime checks.
+- 2025-08-08 - Testing: Add pytest suite (unit + integration) for blueprints/services/models; include factory fixtures; set up coverage thresholds; add a few smoke tests.
+- 2025-08-08 - CI/CD: GitHub Actions pipeline to lint (flake8/ruff), format (black/isort), test, build, and deploy (PythonAnywhere API or SSH); protect main branch with required checks.
+- 2025-08-08 - Type safety & linting: Introduce mypy (incremental), ruff/flake8, and pre-commit hooks; fail CI on lint/type errors.
+- 2025-08-08 - Performance: Audit N+1 queries; add pagination consistently (patients, sessions already partially), eager-load relationships where needed; cache hot queries with Redis.
+- 2025-08-08 - Caching: Configure CDN/long cache headers for static assets with cache-busting (hashed filenames); Tailwind production build with purge to minimize CSS size.
+- 2025-08-08 - Build assets: Add a script to build Tailwind (minified, purged) for production; consider bundling minimal JS or using import maps; avoid unused scripts on non-dashboard pages.
+- 2025-08-08 - Error UX: Add custom 400/403/404/500 templates; standardize flash message categories and placement (already added components/flash.html).
+- 2025-08-08 - API readiness: If exposing APIs, add versioned blueprint, OpenAPI schema (flask-smorest), input validation (marshmallow/pydantic), and auth (JWT/OAuth2) as needed.
+- 2025-08-08 - i18n/l10n: Integrate Flask-Babel for translations (ES/EN); externalize user-facing strings.
+- 2025-08-08 - Data privacy: Minimize PII storage; mask logs; enable encryption at rest (DB/storage) and in transit (TLS); document data retention and deletion policies.
+- 2025-08-08 - Task queue: Add a worker (RQ/Celery) for background jobs: emails, image processing, reports; use Redis broker, instrument retries and dead-lettering.
+- 2025-08-08 - Containerization: Provide Dockerfile and docker-compose for reproducible dev/staging; run gunicorn with sensible workers; pin Python version.
+- 2025-08-08 - Access control logging: Log admin actions (audit trail) for compliance; store with immutable retention where applicable.
+- 2025-08-08 - Documentation: Expand README with setup/run/deploy; add sys_upgrades.md (this file), ops runbooks, and ADRs for key decisions.
+- 2025-08-08 - UX polish: Ensure keyboard navigation and a11y basics; add loading states and empty states (components) where applicable.
+- 2025-08-08 - Feature flags: Lightweight toggles for risky features (env-driven or a tiny table); allow canary rollouts.
