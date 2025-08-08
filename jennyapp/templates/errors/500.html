@@ -1,0 +1,9 @@
+{% extends 'layouts/app.html' %}
+{% block title %}Server Error · Jenny App{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-3xl px-6 py-16">
+  <h1 class="text-3xl font-bold text-gray-900 mb-3">Something went wrong</h1>
+  <p class="text-gray-600 mb-6">We’re working to fix the issue. Please try again later.</p>
+  <a href="{{ url_for('index.index') }}" class="text-indigo-600 hover:text-indigo-500">Back to home</a>
+</div>
+{% endblock %}

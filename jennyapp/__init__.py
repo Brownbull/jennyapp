@@ -12,13 +12,22 @@ from .blueprints.patient import patient_bp
 from .blueprints.session import session_bp
 from .blueprints.dashboard import dashboard_bp
 from .utils import time_since
+from .config import DevelopmentConfig, ProductionConfig
 
 from .models import User
 
 def create_app():
   app = Flask(__name__)
 
-  app.config.from_prefixed_env()    
+  # Load configuration: prefer FLASK_ENV=production to switch
+  env = os.environ.get("FLASK_ENV", "development").lower()
+  if env == "production":
+    app.config.from_object(ProductionConfig)
+  else:
+    app.config.from_object(DevelopmentConfig)
+
+  # Allow overrides via environment prefix (FLASK_*)
+  app.config.from_prefixed_env()
 
   db.init_app(app)
   migrate.init_app(app, db)
@@ -32,6 +41,20 @@ def create_app():
 
   # UTILS
   app.add_template_filter(time_since, 'time_since')
+
+  # Jinja helper to cache-bust static assets with STATIC_VERSION
+  @app.context_processor
+  def inject_static_version():
+    return {"static_v": app.config.get("STATIC_VERSION", "1")}
+
+  # Basic error pages
+  @app.errorhandler(404)
+  def _404(e):
+    return (app.jinja_env.get_or_select_template(["errors/404.html"]).render(), 404)
+
+  @app.errorhandler(500)
+  def _500(e):
+    return (app.jinja_env.get_or_select_template(["errors/500.html"]).render(), 500)
 
   # ROUTES
   # app.register_blueprint(main)

@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "build:css": "tailwindcss -i jennyapp/static/src/input.css -o jennyapp/static/css/tailwind.css --minify",
+  "watch:css": "tailwindcss -i jennyapp/static/src/input.css -o jennyapp/static/css/tailwind.css --watch"
   },
   "repository": {
     "type": "git",

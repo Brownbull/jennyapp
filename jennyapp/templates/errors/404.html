@@ -1,0 +1,9 @@
+{% extends 'layouts/app.html' %}
+{% block title %}Not Found · Jenny App{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-3xl px-6 py-16">
+  <h1 class="text-3xl font-bold text-gray-900 mb-3">Page not found</h1>
+  <p class="text-gray-600 mb-6">The page you’re looking for doesn’t exist or was moved.</p>
+  <a href="{{ url_for('index.index') }}" class="text-indigo-600 hover:text-indigo-500">Go to home</a>
+</div>
+{% endblock %}
